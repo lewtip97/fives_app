@@ -1,0 +1,11 @@
+,Game week,Date,Opponents,Result,Opponent_wins,Opponent_losses,Opponent_form (%),Score home,Score away
+0,1,2023-08-08,Team C,Win,1,1,100,3,2
+1,2,2023-08-15,Team E,Win,0,0,66,3,1
+2,3,2023-08-22,Team A,Win,0,0,66,9,8
+3,4,2023-08-29,Team C,Win,4,4,0,4,3
+4,5,2023-09-05,Team A,Draw,0,2,66,1,1
+5,6,2023-09-12,Team C,Win,5,0,0,3,1
+6,7,2023-09-19,Team E,Win,7,2,66,8,1
+7,8,2023-09-26,Team A,Win,0,1,66,3,2
+8,9,2023-10-03,Team B,Draw,4,8,33,3,3
+9,10,2023-10-10,Team A,Win,0,3,66,8,1
