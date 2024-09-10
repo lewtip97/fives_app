@@ -50,7 +50,7 @@ class FootballTeamDataGenerator:
 
     def generate_random_scores(self, result):
         if result == "Win":
-            score_home = random.randint(1, 5)
+            score_home = random.randint(3, 9)
             score_away = random.randint(0, score_home - 1)
         elif result == "Lose":
             score_away = random.randint(1, 5)

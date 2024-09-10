@@ -4,6 +4,8 @@ import pandas as pd
 import os
 import tempfile
 import pages.team_stats as team_stats
+import pages.player_stats as player_stats
+import pages.match_forecaster as match_forecaster
 
 # Set the theme of the Streamlit app
 st.set_page_config(
@@ -55,16 +57,13 @@ if selection == "Home":
     st.write("Up the Rejects!")
     
 elif selection == "Player Stats":
-    st.header("Player Statistics")
-    st.write("This is the player stats page. (More content will come here)")
-    # You can include content from other pages/files if needed.
+    player_stats.run()
     
 elif selection == "Team Stats":
     team_stats.run()
 
 elif selection == "Match forecaster":
-    st.header("Team Visualisation")
-    st.write("This is where the Football Visualisation will appear.")
+    match_forecaster.run()
 
 
 

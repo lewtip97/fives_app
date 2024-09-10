@@ -3,6 +3,7 @@ import pandas as pd
 import altair as alt
 import os
 import plotly.graph_objects as go
+from PIL import Image
 
 
 def run():
@@ -39,27 +40,9 @@ def run():
     # Calculate the cumulative goals for each player
     goals_long['Cumulative Goals'] = goals_long.groupby('Player')['Goals'].cumsum()
 
-    # Create an interactive Altair chart (without legend)
-    chart = alt.Chart(goals_long).mark_line(point=True).encode(
-        x=alt.X('Gameweek:O', title='Gameweek'),
-        y=alt.Y('Cumulative Goals:Q', title='Cumulative Goals'),
-        color='Player:N',  # This assigns a unique color per player
-        tooltip=['Player', 'Gameweek', 'Cumulative Goals']
-    ).properties(
-        title='Cumulative Goals Scored Over Time',
-        width=1200,
-        height=600
-    ).interactive()  # This makes the chart interactive (zoom/pan)
-
-    # Display the chart in Streamlit
-    st.altair_chart(chart, use_container_width=True)
-
-    # For each player, display their image at the bottom of the chart
-    # Get the last gameweek and their final cumulative score
-    final_scores = goals_long.groupby('Player').tail(1)
 
 
-    # Create Plotly figure
+  # Create Plotly figure
     fig = go.Figure()
 
     # Add a line for each player
@@ -72,6 +55,13 @@ def run():
             name=player
         ))
 
+    # Dictionary to track occupied positions (keys are tuples of (gameweek, cumulative_goals))
+    occupied_positions = {}
+
+    # Define the offset for stacking images
+    x_offset = 0.4  # Offset value to place images side by side
+    y_offset = 0  # Vertical offset (optional, adjust if needed)
+
     # Overlay images at the final gameweek
     final_scores = goals_long.groupby('Player').tail(1)
     for idx, row in final_scores.iterrows():
@@ -83,14 +73,38 @@ def run():
         player_image = load_player_image(player)
 
         if player_image:
+            # Check if the coordinates are already occupied
+            if (final_gameweek, final_goals) in occupied_positions:
+                # Get the number of times the position is already occupied
+                occurrences = occupied_positions[(final_gameweek, final_goals)]
+                # Update the position with an offset
+                new_x = final_gameweek + (occurrences * x_offset)
+                new_y = final_goals + (occurrences * y_offset)  # Optional, adjust vertical stacking if needed
+                # Increment the count of occurrences
+                occupied_positions[(final_gameweek, final_goals)] += 1
+            else:
+                # If position is not occupied, place the image at the original position
+                new_x = final_gameweek
+                new_y = final_goals
+                # Mark the position as occupied with the first occurrence
+                occupied_positions[(final_gameweek, final_goals)] = 1
+
+            # Add the player's image to the plot at the updated position
             fig.add_layout_image(
-            dict(
-                source="player_images/Player 1.png",
-                x=[final_gameweek],
-                y=[final_goals],
-                sizex = 0.8,
-                sizey = 0.8
-            ))
+                dict(
+                    source=Image.open(player_image),
+                    x=new_x,  # Use the adjusted x coordinate
+                    y=new_y,  # Use the adjusted y coordinate
+                    xref="x",  # Reference x-axis
+                    yref="y",  # Reference y-axis
+                    sizex=1,   # Adjust the size of the image as per your needs
+                    sizey=1,
+                    xanchor="center",  # Center the image at the data point
+                    yanchor="middle",
+                    layer="above"
+                )
+            )
+
 
     # Update layout to remove legend (if desired)
     fig.update_layout(
@@ -105,17 +119,4 @@ def run():
     st.plotly_chart(fig, use_container_width=True)
 
 
-    # Create a placeholder for images to align them based on final scores
-    st.markdown("### Final Scores (Players with Images)")
 
-    for idx, row in final_scores.iterrows():
-        player = row['Player']
-        final_goals = row['Cumulative Goals']
-        final_gameweek = row['Gameweek']
-
-        # Load the player's image
-        player_image = load_player_image(player)
-
-        if player_image:
-            # Display player image with their final gameweek score
-            st.image(player_image, caption=f"{player}: {final_goals} goals (Gameweek {final_gameweek})", width=100)
