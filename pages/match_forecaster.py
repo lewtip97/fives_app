@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import os
 from PIL import Image
+from utils import SelectSeason
+
 
 # Load the list of players
 def load_players():
@@ -18,6 +20,7 @@ def load_player_image(player_name):
 
 # Main function to run the player selection page
 def run():
+    SelectSeason()
     st.title("Select 6 Players for Score Prediction")
 
     # Load the players
@@ -68,3 +71,4 @@ def run():
             st.success("Generating score...")
 
 
+run()

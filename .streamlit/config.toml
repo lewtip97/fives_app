@@ -1,0 +1,8 @@
+[theme]
+primaryColor = "#D4B39E"        # Soft cream color (for buttons and accents)
+backgroundColor = "#F9F8F4"     # Light off-white for background
+secondaryBackgroundColor = "#E8E6E1"  # Subtle beige-grey for widgets/cards
+textColor = "#333333"            # Dark grey text for contrast
+font = "sans serif"
+
+
