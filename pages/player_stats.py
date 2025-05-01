@@ -93,3 +93,5 @@ def run():
         st.write(f"**Average Team Goals Conceded (when playing):** {stats['avg_team_goals_conceded']:.2f}")
         st.write(f"**Win Rate:** {stats['win_rate']:.2f}%")
         st.write(f"**Goals Per Game:** {stats['goals_per_game']:.2f}")
+
+run()

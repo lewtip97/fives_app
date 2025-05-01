@@ -68,3 +68,4 @@ def run():
             st.success("Generating score...")
 
 
+run()
