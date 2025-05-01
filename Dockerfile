@@ -4,7 +4,7 @@ FROM python:3.9
 ADD Home.py .
 COPY . .
 
-RUN pip install streamlit
+RUN pip install streamlit plotly
 
 EXPOSE 8501
 
