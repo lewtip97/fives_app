@@ -4,9 +4,13 @@ import altair as alt
 import os
 import plotly.graph_objects as go
 from PIL import Image
+from utils import SelectSeason
+
 
 
 def run():
+    # season select
+    SelectSeason()
     # Set up the title for the Player Stats page
     st.title("Player Stats - Goals Over Time")
 

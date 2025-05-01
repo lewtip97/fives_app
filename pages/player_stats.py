@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 from PIL import Image
+from utils import SelectSeason
 
 # Function to load data
 @st.cache_data
@@ -64,6 +65,7 @@ def calculate_player_stats(player, goals_df, appearances_df, results_df):
 
 # Function to run the Player Stats page
 def run():
+    SelectSeason()  # Call the function to get the season
     # Load the data
     goals_df, appearances_df, results_df = load_data()
 
@@ -94,4 +96,12 @@ def run():
         st.write(f"**Win Rate:** {stats['win_rate']:.2f}%")
         st.write(f"**Goals Per Game:** {stats['goals_per_game']:.2f}")
 
-run()
+def main():
+    # Set the title for the Player Stats page
+    st.title("Player Statistics")
+    st.write("Detailed statistics for each player, select a player to view their stats.")
+
+    # Run the player stats function
+    run()
+
+main()
