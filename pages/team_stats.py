@@ -12,7 +12,7 @@ def run():
     # season select
     SelectSeason()
     # Set up the title for the Player Stats page
-    st.title("Player Stats - Goals Over Time")
+    st.title("Team Stats - Goals Over Time")
 
     # Load the data
     @st.cache_data
