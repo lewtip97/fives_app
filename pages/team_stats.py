@@ -4,7 +4,7 @@ import altair as alt
 import os
 import plotly.graph_objects as go
 from PIL import Image
-from utils import SelectSeason
+from utils import SelectSeason, DataLoader
 
 
 
@@ -18,7 +18,8 @@ def run():
     @st.cache_data
     def load_data():
         # Loading goals.csv from the 'data' directory
-        data = pd.read_csv('data/goals.csv')
+        loader = DataLoader()
+        data = loader.goals_data()
         return data
 
     # Load the player images from the 'player_images' folder

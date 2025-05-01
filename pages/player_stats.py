@@ -2,15 +2,19 @@ import streamlit as st
 import pandas as pd
 import os
 from PIL import Image
-from utils import SelectSeason
+from utils import SelectSeason, DataLoader
 
 # Function to load data
 @st.cache_data
 def load_data():
     # Load goals and appearances data
-    goals_df = pd.read_csv('data/goals.csv')
-    appearances_df = pd.read_csv('data/appearances.csv')
-    results_df = pd.read_csv('data/results.csv')  # Assuming results.csv contains team data
+    loader = DataLoader()
+    #goals_df = pd.read_csv('data/goals_all.csv')
+    goals_df = loader.goals_data()
+    appearances_df = loader.appearances_data()
+    #appearances_df = pd.read_csv('data/appearances_all.csv')
+    results_df = loader.results_data()
+    #results_df = pd.read_csv('data/results_all.csv')  
     return goals_df, appearances_df, results_df
 
 # Function to load player image

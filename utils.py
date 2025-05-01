@@ -20,6 +20,7 @@ def update_session_state(key, value):
         json.dump(session_state, f, indent=4)
 
 
+
 def get_session_state(key):
     try:
         # Load session state from the JSON file
@@ -32,7 +33,7 @@ def get_session_state(key):
 
 def get_season(current_season=None):
     # Load season options from CSV
-    results_df = pd.read_csv("data/results.csv")
+    results_df = pd.read_csv("data/results_all.csv")
     season_options = sorted(results_df['Season'].dropna().unique(), reverse=True)
     season_options.insert(0, "All seasons")  # Add "All seasons" option at the top
 
@@ -47,7 +48,7 @@ def get_season(current_season=None):
 class SelectSeason:
     def __init__(self):
         # Load the pipeline families from the CSV
-        self.results_df = pd.read_csv("data/results.csv")['Season'].unique().tolist()
+        self.results_df = pd.read_csv("data/results_all.csv")['Season'].unique().tolist()
         self.results_df.append("All seasons")
 
         # Ensure 'selected_pipeline_family' is in the session state
@@ -70,3 +71,38 @@ class SelectSeason:
         
         # Update the session state with the selected option
         update_session_state('selected_season', st.session_state['selected_season'])
+
+
+class DataLoader:
+    def __init__(self):
+        self.data_folder = c.DATA_PATH
+
+    def results_data(self):
+        df = pd.read_csv(self.data_folder / 'results_all.csv')
+        return df
+    
+    def goals_data(self):
+        df = pd.read_csv(self.data_folder / 'goals_all.csv')
+        # Remove row where the first column has value 'TOTAL'
+        first_col = df.columns[0]
+        df = df[df[first_col] != 'TOTAL']
+
+        # Drop the column named 'TOTAL' if it exists
+        if 'TOTAL' in df.columns:
+            df = df.drop(columns=['TOTAL'])
+
+        return df
+
+    def appearances_data(self):
+        df = pd.read_csv(self.data_folder / 'appearances_all.csv')
+
+        # Remove row where the first column has value 'TOTAL'
+        first_col = df.columns[0]
+        df = df[df[first_col] != 'TOTAL']
+
+        # Drop the column named 'TOTAL' if it exists
+        if 'TOTAL' in df.columns:
+            df = df.drop(columns=['TOTAL'])
+
+        return df
+    

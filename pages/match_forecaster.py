@@ -2,12 +2,13 @@ import streamlit as st
 import pandas as pd
 import os
 from PIL import Image
-from utils import SelectSeason
+from utils import SelectSeason, DataLoader
 
 
 # Load the list of players
 def load_players():
-    players_df = pd.read_csv('data/goals.csv')  # Assuming 'goals.csv' contains the player list
+    loader = DataLoader()
+    players_df = loader.goals_data()
     return players_df['Player'].unique()
 
 # Load player image

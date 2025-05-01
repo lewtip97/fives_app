@@ -1,0 +1,28 @@
+Game week,Season,Date,opponents,Friendly,Result,opponent_win_rate,opponent_losses,Opponent_form,Score home,Score away
+1,Prem S1,16/10/24,Team of creme,0,Win,3,0,100,9,6
+2,Prem S1,23/10/24,YMCS old boys,0,Loss,2,1,66,4,7
+3,Prem S1,30/10/24,Strujk of genius,0,Loss,2,1,66,0,4
+4,Prem S1,6/11/24,Card on FC,0,Win,1,2,33,4,3
+5,Prem S1,13/11/24,Tekkers,0,Loss,2,1,66,7,8
+6,Prem S1,20/11/24,Stel Hadj Diouf FC,0,Loss,1,2,33,1,2
+7,Prem S1,27/11/24,Trial team,1,Win,1,2,33,15,3
+8,Prem S1,4/12/24,Team of creme,0,Loss,3,0,100,1,8
+9,Prem S1,11/12/24,YMCS old boys,0,Loss,3,0,100,2,5
+10,Prem S1,18/12/24,Strujk of genius,0,Loss,2,1,66,1,3
+11,Prem S1,9/1/25,Card on FC,0,Loss,0,3,0,2,4
+12,Prem S1,16/1/25,Tekkers,0,Loss,2,1,66,2,6
+13,Prem S1,23/1/25,Trial team,1,Win,1,2,33,9,1
+14,Prem S1,29/1/25,BiskybooFC,0,Win,0,3,0,5,4
+15,Prem S2,5/2/25,strujk of genius,0,Loss,2,1,66,0,5
+16,Prem S2,12/2/25,Stel Hadj Diouf FC,0,Loss,2,1,66,2,9
+17,Prem S2,19/2/25,Team of creme,1,Loss,3,0,100,0,5
+18,Prem S2,26/2/25,Tekkers,0,Loss,2,1,66,3,4
+19,Prem S2,5/3/25,Mods,0,Win,0,3,0,8,1
+20,Prem S2,12/3/25,Tekkers old boys,0,Win,1,2,33,8,6
+21,Prem S2,19/3/25,YMCS old boys,0,Loss,3,0,100,1,10
+22,Prem S2,26/3/25,Strujk of genius,0,Loss,3,0,100,0,3
+23,Prem S2,2/4/25,Stel Hadj Diouf FC,0,Loss,2,1,66,3,6
+24,Prem S2,9/4/25,Team of creme,0,Loss,2,1,66,2,4
+25,Prem S2,16/4/25,Tekkers,0,Win,2,1,66,9,7
+26,Prem S2,23/4/25,Mods,0,Loss,0,3,0,5,7
+27,Prem S2,30/4/25,Tekkers old boys,0,Win,0,3,0,9,3
