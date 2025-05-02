@@ -6,9 +6,9 @@ from joblib import dump, load
 
 
 # Load data
-goals_df = pd.read_csv('data/goals.csv')
-appearances_df = pd.read_csv('data/appearances.csv')
-results_df = pd.read_csv('data/results.csv')
+goals_df = pd.read_csv('data/goals_all.csv')
+appearances_df = pd.read_csv('data/appearances_all.csv')
+results_df = pd.read_csv('data/results_all.csv')
 
 
 

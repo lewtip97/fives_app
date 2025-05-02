@@ -21,7 +21,6 @@ def load_player_image(player_name):
 
 # Main function to run the player selection page
 def run():
-    SelectSeason()
     st.title("Select 6 Players for Score Prediction")
 
     # Load the players
