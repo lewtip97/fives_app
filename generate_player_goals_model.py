@@ -2,13 +2,15 @@ import pandas as pd
 from sklearn import linear_model
 import pickle
 from joblib import dump, load
+from utils import DataLoader
 
 
 
 # Load data
-goals_df = pd.read_csv('data/goals.csv')
-appearances_df = pd.read_csv('data/appearances.csv')
-results_df = pd.read_csv('data/results.csv')
+loader = DataLoader()
+goals_df = loader.goals_data()
+appearances_df = loader.appearances_data()
+results_df = loader.results_data()
 
 
 
@@ -38,14 +40,14 @@ def create_master_dataframe_per_player(player_name, goals_df, appearances_df, re
                 continue  # Skip if no results for the current gameweek
             
             # Get opponent details
-            opponent_info = results_gameweek[['Date', 'Opponents','Opponent_form (%)', 'Score home', 'Score away']].iloc[0]
+            opponent_info = results_gameweek[['Date', 'opponents','opponent_form', 'Score home', 'Score away']].iloc[0]
             
             # Create a dictionary for the current row
             row_data = {
                 'Gameweek': gameweek,
                 'Date': opponent_info['Date'],
-                'Opponent': opponent_info['Opponents'],
-                'Opponent_form': opponent_info['Opponent_form (%)'],
+                'Opponent': opponent_info['opponents'],
+                'Opponent_form': opponent_info['opponent_form'],
                 'Score_home': opponent_info['Score home'],
                 'Score_away': opponent_info['Score away'],
                 'Player': player_name,
@@ -68,6 +70,8 @@ def create_master_dataframe_per_player(player_name, goals_df, appearances_df, re
             master_df = master_df.append(row_data, ignore_index=True)
 
     return master_df
+
+all_players = goals_df['Player'].unique()
 
 for player in all_players:
     player_master_df = create_master_dataframe_per_player(player,goals_df, appearances_df, results_df)

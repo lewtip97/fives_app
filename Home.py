@@ -14,7 +14,7 @@ loader = DataLoader()
 results_df = loader.results_data()
 goals_df = loader.goals_data()
 
-results_df = results_df.sort_values(by='Game week', ascending=True)
+results_df = results_df.sort_values(by='Gameweek', ascending=True)
 
 # Compute basic stats
 win_count = results_df[results_df['Result'] == 'Win'].shape[0]
@@ -33,8 +33,8 @@ latest_match = results_df.iloc[-1]
 opponent = latest_match['opponents']
 home_score = latest_match['Score home']
 away_score = latest_match['Score away']
-latest_gameweek = int(latest_match['Game week'])
-gw_col = f'Gameweek {latest_gameweek}'
+latest_Gameweek = int(latest_match['Gameweek'])
+gw_col = f'Gameweek {latest_Gameweek}'
 
 scorers = []
 if gw_col in goals_df.columns:

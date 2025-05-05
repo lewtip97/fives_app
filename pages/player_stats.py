@@ -9,15 +9,15 @@ class PlayerStatsApp:
         self.goals_df = None
         self.appearances_df = None
         self.results_df = None
-        self.season_by_gameweek = None
+        self.season_by_Gameweek = None
 
     def load_data(self):
         loader = DataLoader()
         self.goals_df = loader.goals_data()
         self.appearances_df = loader.appearances_data()
         self.results_df = loader.results_data()
-        # Create gameweek → season mapping
-        self.season_by_gameweek = self.results_df.set_index('Game week')['Season'].to_dict()
+        # Create Gameweek → season mapping
+        self.season_by_Gameweek = self.results_df.set_index('Gameweek')['Season'].to_dict()
 
     def load_player_image(self, player_name):
         image_path = f'player_images/{player_name}.png'
@@ -43,28 +43,28 @@ class PlayerStatsApp:
                 'goals_per_game': 0
             }
 
-        gameweek_cols = [col for col in goals_df.columns if col.startswith('Gameweek')]
+        Gameweek_cols = [col for col in goals_df.columns if col.startswith('Gameweek')]
 
         total_goals = 0
         total_appearances = 0
-        played_gameweeks = []
+        played_Gameweeks = []
 
-        for col in gameweek_cols:
+        for col in Gameweek_cols:
             gw_num = int(col.split()[-1])
-            if season and self.season_by_gameweek.get(gw_num) != season:
+            if season and self.season_by_Gameweek.get(gw_num) != season:
                 continue
 
             appearance = player_appearances[col].values[0]
             goals = player_goals[col].values[0]
 
             if appearance == 1:
-                played_gameweeks.append(gw_num)
+                played_Gameweeks.append(gw_num)
                 total_appearances += 1
                 total_goals += goals
             elif appearance == 0:
                 total_goals += goals  # include goals even if no appearance? optional
 
-        relevant_results = results_df[results_df['Game week'].isin(played_gameweeks)]
+        relevant_results = results_df[results_df['Gameweek'].isin(played_Gameweeks)]
 
         avg_goals_for = relevant_results['Score home'].mean() if not relevant_results.empty else 0
         avg_goals_against = relevant_results['Score away'].mean() if not relevant_results.empty else 0

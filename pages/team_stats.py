@@ -33,7 +33,7 @@ class TeamStatsApp:
         return goals_long
 
     def get_gameweeks_for_season(self, season):
-        season_weeks = self.results_df[self.results_df['Season'] == season]['Game week']
+        season_weeks = self.results_df[self.results_df['Season'] == season]['gameweek']
         return season_weeks.tolist()
 
     def display_plot(self, goals_long, title):
