@@ -106,3 +106,37 @@ class DataLoader:
 
         return df
     
+class CollectGameweeks:
+    def __init__(self, season):
+        self.season = season
+        loader = DataLoader()
+        self.results = loader.results_data()  # Store results for reuse
+    def collect(self):
+        df = self.results
+
+        if self.season != "All seasons":
+            df = df[df["Season"] == self.season]
+
+        # Drop NA, get unique values, sort
+        gameweeks = sorted(df["Game week"].dropna().unique().tolist())
+        return gameweeks
+    
+class FilterGameweeks:
+    def __init__(self, gameweeks):
+        self.gameweeks = gameweeks  # e.g., [1, 2, 3]
+
+    def results_filter(self, results_df):
+        return results_df[results_df["Game week"].isin(self.gameweeks)]
+
+    def appearances_filter(self, appearances_df):
+        cols_to_keep = ["Player"] + [f"Gameweek {gw}" for gw in self.gameweeks]
+        return appearances_df[cols_to_keep]
+
+    def goals_filter(self, goals_df):
+        cols_to_keep = ["Player"] + [f"Gameweek {gw}" for gw in self.gameweeks]
+        return goals_df[cols_to_keep]
+
+
+
+
+        
