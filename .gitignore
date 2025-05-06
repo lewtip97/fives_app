@@ -3,5 +3,3 @@ pages/__pycache__/
 *$py.class
 
 *.pyc
-*.png
-*.joblib
