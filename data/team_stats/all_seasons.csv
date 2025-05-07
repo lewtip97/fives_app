@@ -1,0 +1,352 @@
+Player,Gameweek,Goals,Cumulative Goals
+Ash,1,0,0
+Ash,2,0,0
+Ash,3,0,0
+Ash,4,0,0
+Ash,5,0,0
+Ash,6,0,0
+Ash,7,0,0
+Ash,8,0,0
+Ash,9,0,0
+Ash,10,0,0
+Ash,11,0,0
+Ash,12,1,1
+Ash,13,1,2
+Ash,14,2,4
+Ash,15,0,4
+Ash,16,0,4
+Ash,17,0,4
+Ash,18,0,4
+Ash,19,1,5
+Ash,20,1,6
+Ash,21,0,6
+Ash,22,0,6
+Ash,23,0,6
+Ash,24,0,6
+Ash,25,0,6
+Ash,26,0,6
+Ash,27,0,6
+Baker,1,0,0
+Baker,2,0,0
+Baker,3,0,0
+Baker,4,0,0
+Baker,5,0,0
+Baker,6,0,0
+Baker,7,0,0
+Baker,8,0,0
+Baker,9,0,0
+Baker,10,0,0
+Baker,11,0,0
+Baker,12,0,0
+Baker,13,0,0
+Baker,14,0,0
+Baker,15,0,0
+Baker,16,0,0
+Baker,17,0,0
+Baker,18,0,0
+Baker,19,0,0
+Baker,20,0,0
+Baker,21,0,0
+Baker,22,0,0
+Baker,23,0,0
+Baker,24,0,0
+Baker,25,0,0
+Baker,26,0,0
+Baker,27,0,0
+Bruce,1,1,1
+Bruce,2,2,3
+Bruce,3,0,3
+Bruce,4,1,4
+Bruce,5,1,5
+Bruce,6,1,6
+Bruce,7,3,9
+Bruce,8,0,9
+Bruce,9,0,9
+Bruce,10,0,9
+Bruce,11,0,9
+Bruce,12,0,9
+Bruce,13,1,10
+Bruce,14,0,10
+Bruce,15,0,10
+Bruce,16,1,11
+Bruce,17,0,11
+Bruce,18,0,11
+Bruce,19,0,11
+Bruce,20,1,12
+Bruce,21,0,12
+Bruce,22,0,12
+Bruce,23,0,12
+Bruce,24,0,12
+Bruce,25,0,12
+Bruce,26,0,12
+Bruce,27,1,13
+Jack J,1,0,0
+Jack J,2,0,0
+Jack J,3,0,0
+Jack J,4,0,0
+Jack J,5,0,0
+Jack J,6,0,0
+Jack J,7,0,0
+Jack J,8,0,0
+Jack J,9,0,0
+Jack J,10,0,0
+Jack J,11,0,0
+Jack J,12,0,0
+Jack J,13,0,0
+Jack J,14,0,0
+Jack J,15,0,0
+Jack J,16,0,0
+Jack J,17,0,0
+Jack J,18,0,0
+Jack J,19,0,0
+Jack J,20,0,0
+Jack J,21,0,0
+Jack J,22,0,0
+Jack J,23,0,0
+Jack J,24,0,0
+Jack J,25,0,0
+Jack J,26,0,0
+Jack J,27,0,0
+Jake H,1,0,0
+Jake H,2,0,0
+Jake H,3,0,0
+Jake H,4,0,0
+Jake H,5,0,0
+Jake H,6,0,0
+Jake H,7,0,0
+Jake H,8,0,0
+Jake H,9,1,1
+Jake H,10,0,1
+Jake H,11,0,1
+Jake H,12,0,1
+Jake H,13,3,4
+Jake H,14,1,5
+Jake H,15,0,5
+Jake H,16,0,5
+Jake H,17,0,5
+Jake H,18,0,5
+Jake H,19,1,6
+Jake H,20,0,6
+Jake H,21,0,6
+Jake H,22,0,6
+Jake H,23,1,7
+Jake H,24,0,7
+Jake H,25,1,8
+Jake H,26,1,9
+Jake H,27,0,9
+Keenan,1,0,0
+Keenan,2,0,0
+Keenan,3,0,0
+Keenan,4,0,0
+Keenan,5,0,0
+Keenan,6,0,0
+Keenan,7,0,0
+Keenan,8,0,0
+Keenan,9,0,0
+Keenan,10,0,0
+Keenan,11,0,0
+Keenan,12,0,0
+Keenan,13,0,0
+Keenan,14,0,0
+Keenan,15,0,0
+Keenan,16,0,0
+Keenan,17,0,0
+Keenan,18,0,0
+Keenan,19,0,0
+Keenan,20,0,0
+Keenan,21,0,0
+Keenan,22,0,0
+Keenan,23,0,0
+Keenan,24,0,0
+Keenan,25,0,0
+Keenan,26,0,0
+Keenan,27,0,0
+Lewis T,1,2,2
+Lewis T,2,0,2
+Lewis T,3,0,2
+Lewis T,4,0,2
+Lewis T,5,2,4
+Lewis T,6,0,4
+Lewis T,7,4,8
+Lewis T,8,0,8
+Lewis T,9,0,8
+Lewis T,10,1,9
+Lewis T,11,2,11
+Lewis T,12,1,12
+Lewis T,13,3,15
+Lewis T,14,1,16
+Lewis T,15,0,16
+Lewis T,16,1,17
+Lewis T,17,0,17
+Lewis T,18,2,19
+Lewis T,19,5,24
+Lewis T,20,2,26
+Lewis T,21,1,27
+Lewis T,22,0,27
+Lewis T,23,1,28
+Lewis T,24,2,30
+Lewis T,25,5,35
+Lewis T,26,4,39
+Lewis T,27,4,43
+Logan,1,2,2
+Logan,2,1,3
+Logan,3,0,3
+Logan,4,2,5
+Logan,5,3,8
+Logan,6,0,8
+Logan,7,2,10
+Logan,8,0,10
+Logan,9,0,10
+Logan,10,0,10
+Logan,11,0,10
+Logan,12,0,10
+Logan,13,0,10
+Logan,14,0,10
+Logan,15,0,10
+Logan,16,0,10
+Logan,17,0,10
+Logan,18,0,10
+Logan,19,0,10
+Logan,20,0,10
+Logan,21,0,10
+Logan,22,0,10
+Logan,23,0,10
+Logan,24,0,10
+Logan,25,0,10
+Logan,26,0,10
+Logan,27,0,10
+Rich,1,0,0
+Rich,2,0,0
+Rich,3,0,0
+Rich,4,0,0
+Rich,5,0,0
+Rich,6,0,0
+Rich,7,0,0
+Rich,8,0,0
+Rich,9,0,0
+Rich,10,0,0
+Rich,11,0,0
+Rich,12,0,0
+Rich,13,0,0
+Rich,14,0,0
+Rich,15,0,0
+Rich,16,0,0
+Rich,17,0,0
+Rich,18,0,0
+Rich,19,0,0
+Rich,20,0,0
+Rich,21,0,0
+Rich,22,0,0
+Rich,23,0,0
+Rich,24,0,0
+Rich,25,0,0
+Rich,26,0,0
+Rich,27,0,0
+Sam G,1,2,2
+Sam G,2,0,2
+Sam G,3,0,2
+Sam G,4,0,2
+Sam G,5,0,2
+Sam G,6,0,2
+Sam G,7,0,2
+Sam G,8,0,2
+Sam G,9,0,2
+Sam G,10,0,2
+Sam G,11,0,2
+Sam G,12,0,2
+Sam G,13,0,2
+Sam G,14,0,2
+Sam G,15,0,2
+Sam G,16,0,2
+Sam G,17,0,2
+Sam G,18,0,2
+Sam G,19,0,2
+Sam G,20,0,2
+Sam G,21,0,2
+Sam G,22,0,2
+Sam G,23,0,2
+Sam G,24,0,2
+Sam G,25,0,2
+Sam G,26,0,2
+Sam G,27,0,2
+Sam M,1,0,0
+Sam M,2,1,1
+Sam M,3,0,1
+Sam M,4,1,2
+Sam M,5,0,2
+Sam M,6,0,2
+Sam M,7,3,5
+Sam M,8,0,5
+Sam M,9,1,6
+Sam M,10,0,6
+Sam M,11,0,6
+Sam M,12,0,6
+Sam M,13,0,6
+Sam M,14,1,7
+Sam M,15,0,7
+Sam M,16,0,7
+Sam M,17,0,7
+Sam M,18,0,7
+Sam M,19,0,7
+Sam M,20,3,10
+Sam M,21,0,10
+Sam M,22,0,10
+Sam M,23,0,10
+Sam M,24,0,10
+Sam M,25,0,10
+Sam M,26,0,10
+Sam M,27,0,10
+Sam T,1,2,2
+Sam T,2,0,2
+Sam T,3,0,2
+Sam T,4,0,2
+Sam T,5,1,3
+Sam T,6,0,3
+Sam T,7,2,5
+Sam T,8,1,6
+Sam T,9,0,6
+Sam T,10,0,6
+Sam T,11,0,6
+Sam T,12,0,6
+Sam T,13,1,7
+Sam T,14,0,7
+Sam T,15,0,7
+Sam T,16,0,7
+Sam T,17,0,7
+Sam T,18,1,8
+Sam T,19,1,9
+Sam T,20,1,10
+Sam T,21,0,10
+Sam T,22,0,10
+Sam T,23,1,11
+Sam T,24,0,11
+Sam T,25,3,14
+Sam T,26,0,14
+Sam T,27,1,15
+TG,1,0,0
+TG,2,0,0
+TG,3,0,0
+TG,4,0,0
+TG,5,0,0
+TG,6,0,0
+TG,7,0,0
+TG,8,0,0
+TG,9,0,0
+TG,10,0,0
+TG,11,0,0
+TG,12,0,0
+TG,13,0,0
+TG,14,0,0
+TG,15,0,0
+TG,16,0,0
+TG,17,0,0
+TG,18,0,0
+TG,19,0,0
+TG,20,0,0
+TG,21,0,0
+TG,22,0,0
+TG,23,0,0
+TG,24,0,0
+TG,25,0,0
+TG,26,0,0
+TG,27,3,3

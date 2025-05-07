@@ -2,48 +2,32 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from utils import DataLoader
 
 st.set_page_config(layout="wide")
 
 st.title("Bieslas Rejects")
 st.write("Up the rejects!")
 
-# Load data
-loader = DataLoader()
-results_df = loader.results_data()
-goals_df = loader.goals_data()
+# Load precomputed data
+result_counts = pd.read_csv("data/homepage/result_counts.csv")
+goals_summary = pd.read_csv("data/homepage/goals_summary.csv")
+recent_results = pd.read_csv("data/homepage/recent_results.csv")['Recent Results'].tolist()
+latest_match_df = pd.read_csv("data/homepage/latest_match.csv").iloc[0]
 
-results_df = results_df.sort_values(by='Gameweek', ascending=True)
+# Extract values
+win_count = result_counts.loc[result_counts['Result'] == 'Win', 'Count'].values[0]
+draw_count = result_counts.loc[result_counts['Result'] == 'Draw', 'Count'].values[0]
+loss_count = result_counts.loc[result_counts['Result'] == 'Loss', 'Count'].values[0]
 
-# Compute basic stats
-win_count = results_df[results_df['Result'] == 'Win'].shape[0]
-draw_count = results_df[results_df['Result'] == 'Draw'].shape[0]
-loss_count = results_df[results_df['Result'] == 'Loss'].shape[0]
-total_matches = win_count + draw_count + loss_count
+goals_scored = goals_summary.loc[goals_summary['Metric'] == 'Scored', 'Goals'].values[0]
+goals_against = goals_summary.loc[goals_summary['Metric'] == 'Conceded', 'Goals'].values[0]
 
-goals_scored = results_df['Score home'].sum()
-goals_against = results_df['Score away'].sum()
+opponent = latest_match_df['Opponent']
+home_score = latest_match_df['Score Home']
+away_score = latest_match_df['Score Away']
+scorers_text = latest_match_df['Scorers Text']
 
-recent_results = results_df.tail(5)['Result'].tolist()
 form_colors = {'Win': '#4CAF50', 'Draw': '#BDBDBD', 'Loss': '#F44336'}
-
-# Latest match info
-latest_match = results_df.iloc[-1]
-opponent = latest_match['opponents']
-home_score = latest_match['Score home']
-away_score = latest_match['Score away']
-latest_Gameweek = int(latest_match['Gameweek'])
-gw_col = f'Gameweek {latest_Gameweek}'
-
-scorers = []
-if gw_col in goals_df.columns:
-    for _, row in goals_df.iterrows():
-        goals = row[gw_col]
-        if goals > 0:
-            player = row['Player']
-            scorers.append(f"{player} ({int(goals)})" if goals > 1 else player)
-scorers_text = ', '.join(scorers) if scorers else 'No goalscorers recorded.'
 
 # Layout with 2 rows
 top_col1, top_col2 = st.columns(2)
@@ -75,10 +59,7 @@ bottom_col1, bottom_col2 = st.columns(2)
 
 with bottom_col1:
     st.subheader("Recent Form (Last 5)")
-
-    # Use Streamlit columns to show results as colored boxes
     cols = st.columns(len(recent_results))
-
     for col, result in zip(cols, recent_results):
         letter = result[0]
         color = form_colors.get(result, "#CCCCCC")
@@ -96,8 +77,6 @@ with bottom_col1:
             """,
             unsafe_allow_html=True
         )
-
-
 
 with bottom_col2:
     st.subheader("Latest Match")
