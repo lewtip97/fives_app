@@ -1,22 +1,21 @@
 import streamlit as st
 import pandas as pd
 import hmac
-import io
 from datetime import datetime
 
 def check_password():
-    """Returns `True` if the user had the correct password."""
+    """Returns `True` if the user has the correct password."""
     def password_entered():
         """Checks whether a password entered by the user is correct."""
         if hmac.compare_digest(st.session_state["password"], st.secrets["password"]):
             st.session_state["password_correct"] = True
-            del st.session_state["password"]  # Don't store the password.
+            del st.session_state["password"]
         else:
             st.session_state["password_correct"] = False
-    # Return True if the password is validated.
+
     if st.session_state.get("password_correct", False):
         return True
-    # Show input for password.
+
     st.text_input(
         "Enter the password to visit the manager's office:", type="password", on_change=password_entered, key="password"
     )
@@ -39,14 +38,13 @@ def save_data(results_df, goals_df, appearances_df):
 
 # Admin page
 def admin_page():
-    st.title('Manager\'s Office - Add New Result')
+    st.title("Manager's Office - Add New Result")
 
     results_df, goals_df, appearances_df = load_data()
 
     # Add new result section
     st.header('Add New Result')
 
-    # Input fields for the new result
     gameweek = st.number_input('Gameweek', min_value=1, max_value=38, key='gameweek')
     season = st.text_input('Season', 'Prem S1', key='season')
     date = st.date_input('Date', datetime.today(), key='date')
@@ -59,17 +57,15 @@ def admin_page():
     score_home = st.number_input('Home Team Score', min_value=0, key='score_home')
     score_away = st.number_input('Away Team Score', min_value=0, key='score_away')
 
-    # Input for players who played and goals scored
-    players = list(appearances_df['Player'])
+    players = sorted(set(appearances_df['Player']).union(goals_df['Player']))
     players_played = st.multiselect('Select Players Who Played', options=players, key='players_played')
     goals_scored = {}
     for player in players_played:
         goals_scored[player] = st.number_input(f'Goals Scored by {player}', min_value=0, key=f'goals_scored_{player}')
 
-    # Button to add new result
     if st.button('Add New Result'):
-        # Add result to the results dataframe
-        new_result = {
+        # Add result to results_df
+        new_result = pd.DataFrame([{
             'Gameweek': gameweek,
             'Season': season,
             'Date': date.strftime('%d/%m/%y'),
@@ -81,50 +77,53 @@ def admin_page():
             'opponent_form': opponent_form,
             'Score home': score_home,
             'Score away': score_away
-        }
-        results_df = results_df.append(new_result, ignore_index=True)
+        }])
+        results_df = pd.concat([results_df, new_result], ignore_index=True)
 
-        # Add player appearances and goals to the respective dataframes
-        for player in players_played:
-            gameweek_column = f'Gameweek {gameweek}'
-            appearances_df.loc[appearances_df['Player'] == player, gameweek_column] = 1
-            if player in goals_scored:
-                goals_df.loc[goals_df['Player'] == player, gameweek_column] = goals_scored[player]
+        gameweek_col = f'Gameweek {gameweek}'
 
-        # Save updated data
+        # Ensure all players from both DataFrames are included
+        all_players = sorted(set(players_played).union(appearances_df['Player']).union(goals_df['Player']))
+
+        for player in all_players:
+            if player not in appearances_df['Player'].values:
+                appearances_df = pd.concat([appearances_df, pd.DataFrame([{'Player': player}])], ignore_index=True)
+            if player not in goals_df['Player'].values:
+                goals_df = pd.concat([goals_df, pd.DataFrame([{'Player': player}])], ignore_index=True)
+
+        # Ensure column exists and default to 0
+        if gameweek_col not in appearances_df.columns:
+            appearances_df[gameweek_col] = 0
+        if gameweek_col not in goals_df.columns:
+            goals_df[gameweek_col] = 0
+
+        # Set 1 for those who played, 0 otherwise
+        appearances_df[gameweek_col] = appearances_df['Player'].apply(lambda x: 1 if x in players_played else 0)
+
+        # Set goals for those who scored, 0 otherwise
+        goals_df[gameweek_col] = goals_df['Player'].apply(lambda x: goals_scored.get(x, 0))
+
+        # Save updates
         save_data(results_df, goals_df, appearances_df)
-
         st.success('New result added successfully!')
 
     # Remove gameweek section
     st.header('Remove Gameweek')
-
-    # Select a gameweek to remove
-    gameweeks = results_df['Gameweek'].unique()
-    selected_gameweek = st.selectbox('Select Gameweek to Remove', index=None, placeholder = 'Select a gamweek...', options=gameweeks, key='remove_gameweek')
+    gameweeks = sorted(results_df['Gameweek'].unique())
+    selected_gameweek = st.selectbox('Select Gameweek to Remove', index=None, placeholder='Select a gameweek...', options=gameweeks, key='remove_gameweek')
 
     if selected_gameweek:
         st.warning('Warning: This action cannot be undone!')
         if st.button('Remove Selected Gameweek'):
-            st.write(f'remove gameweek {selected_gameweek}')
-            st.write('here')
-            # Remove the selected gameweek's data from the results dataframe
+            gameweek_col = f'Gameweek {selected_gameweek}'
             results_df = results_df[results_df['Gameweek'] != selected_gameweek]
-            st.write('here')
-            # Remove the selected gameweek's column from the goals dataframe
-            goals_df = goals_df.drop(columns=[f'Gameweek {selected_gameweek}'])
-            st.write('here')
-            # Remove the selected gameweek's column from the appearances dataframe
-            appearances_df = appearances_df.drop(columns=[f'Gameweek {selected_gameweek}'])
-            st.write('here')
-            # Save updated data
+            if gameweek_col in goals_df.columns:
+                goals_df = goals_df.drop(columns=[gameweek_col])
+            if gameweek_col in appearances_df.columns:
+                appearances_df = appearances_df.drop(columns=[gameweek_col])
             save_data(results_df, goals_df, appearances_df)
-
             st.success(f'Gameweek {selected_gameweek} removed successfully!')
 
-                
-
 # Display admin page only if the user enters the correct password
-admin_rights = check_password()
-if admin_rights:
+if check_password():
     admin_page()
