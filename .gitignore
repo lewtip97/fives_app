@@ -3,3 +3,5 @@ pages/__pycache__/
 *$py.class
 
 *.pyc
+
+.env
