@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 load_dotenv()
 from fastapi import FastAPI
-from app.routers import teams
+from .routers import teams, players, matches, opponents
 from supabase import create_client, Client
 import os
 
@@ -11,6 +11,9 @@ SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
 app = FastAPI()
 
 app.include_router(teams.router)
+app.include_router(players.router)
+app.include_router(matches.router)
+app.include_router(opponents.router)
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 
