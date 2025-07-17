@@ -2,7 +2,7 @@ import os
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import logging
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -19,9 +19,15 @@ if not SUPABASE_URL or not SUPABASE_ANON_KEY:
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-def fetch_data():
-    matches = supabase.table("matches").select("*", "team_id").execute().data
+def fetch_data(team_id: Optional[str] = None):
+    match_query = supabase.table("matches").select("*", "team_id").execute()
+    matches = match_query.data
+    if team_id:
+        matches = [m for m in matches if m["team_id"] == team_id]
+    match_ids = [m["id"] for m in matches]
     appearances = supabase.table("appearances").select("*", "player_id, match_id, goals").execute().data
+    if team_id:
+        appearances = [a for a in appearances if a["match_id"] in match_ids]
     players = supabase.table("players").select("*").execute().data
     teams = supabase.table("teams").select("*").execute().data
     logger.info(f"Fetched {len(matches)} matches, {len(appearances)} appearances, {len(players)} players, {len(teams)} teams")
@@ -85,9 +91,9 @@ def upsert_player_gameweek_stats(records):
     else:
         logger.warning("No player gameweek stats to insert")
 
-def recalculate_player_gameweek_stats():
+def recalculate_player_gameweek_stats(team_id: Optional[str] = None):
     logger.info("Starting player gameweek stats calculation...")
-    matches, appearances, players, teams = fetch_data()
+    matches, appearances, players, teams = fetch_data(team_id=team_id)
     if not matches or not appearances:
         logger.warning("No matches or appearances found")
         return

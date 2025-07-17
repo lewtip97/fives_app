@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List
 from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
+from backend.app.auth import get_current_user_id
 
 load_dotenv()
 
@@ -13,8 +14,6 @@ SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 router = APIRouter(prefix="/matches", tags=["matches"])
-
-USER_ID = "00000000-0000-0000-0000-000000000000"
 
 class AppearanceIn(BaseModel):
     player_id: str
@@ -31,16 +30,16 @@ class MatchFullIn(BaseModel):
     appearances: List[AppearanceIn]
 
 @router.post("/full")
-def create_full_match(match: MatchFullIn):
+def create_full_match(match: MatchFullIn, user_id: str = Depends(get_current_user_id)):
     try:
         # 1. Find or create opponent for this user
-        opponent_resp = supabase.table("opponents").select("id").eq("name", match.opponent_name).eq("created_by", USER_ID).execute()
+        opponent_resp = supabase.table("opponents").select("id").eq("name", match.opponent_name).eq("created_by", user_id).execute()
         if opponent_resp.data:
             opponent_id = opponent_resp.data[0]["id"]
         else:
             new_opp_resp = supabase.table("opponents").insert({
                 "name": match.opponent_name,
-                "created_by": USER_ID,
+                "created_by": user_id,
                 "created_at": "now()"
             }).execute()
             if not new_opp_resp.data:
@@ -56,7 +55,7 @@ def create_full_match(match: MatchFullIn):
             "gameweek": match.gameweek,
             "season": match.season,
             "played_at": match.played_at,
-            "created_by": USER_ID,
+            "created_by": user_id,
             "created_at": "now()"
         }).execute()
         if not match_resp.data:
@@ -81,21 +80,21 @@ def create_full_match(match: MatchFullIn):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/full/{match_id}")
-def update_full_match(match_id: str, match: MatchFullIn):
+def update_full_match(match_id: str, match: MatchFullIn, user_id: str = Depends(get_current_user_id)):
     try:
         # 1. Verify the match belongs to this user
-        match_check = supabase.table("matches").select("id").eq("id", match_id).eq("created_by", USER_ID).execute()
+        match_check = supabase.table("matches").select("id").eq("id", match_id).eq("created_by", user_id).execute()
         if not match_check.data:
             raise HTTPException(status_code=404, detail="Match not found or access denied")
 
         # 2. Find or create opponent for this user
-        opponent_resp = supabase.table("opponents").select("id").eq("name", match.opponent_name).eq("created_by", USER_ID).execute()
+        opponent_resp = supabase.table("opponents").select("id").eq("name", match.opponent_name).eq("created_by", user_id).execute()
         if opponent_resp.data:
             opponent_id = opponent_resp.data[0]["id"]
         else:
             new_opp_resp = supabase.table("opponents").insert({
                 "name": match.opponent_name,
-                "created_by": USER_ID,
+                "created_by": user_id,
                 "created_at": "now()"
             }).execute()
             if not new_opp_resp.data:
@@ -111,7 +110,7 @@ def update_full_match(match_id: str, match: MatchFullIn):
             "gameweek": match.gameweek,
             "season": match.season,
             "played_at": match.played_at
-        }).eq("id", match_id).eq("created_by", USER_ID).execute()
+        }).eq("id", match_id).eq("created_by", user_id).execute()
         if not match_resp.data:
             raise HTTPException(status_code=404, detail="Failed to update match")
 
@@ -163,12 +162,12 @@ class MatchWithDetailsResponse(BaseModel):
     appearances: List[dict]  # Will contain player_id, goals, player_name
 
 @router.get("/", response_model=List[MatchWithDetailsResponse])
-def get_matches(season: str = None, team_id: str = None):
+def get_matches(season: str = None, team_id: str = None, user_id: str = Depends(get_current_user_id)):
     """
     Get all matches for the current user, optionally filtered by season or team.
     """
     try:
-        user_id = USER_ID
+        # user_id = USER_ID # This line is removed as per the edit hint
         
         # Build the query
         query = supabase.table("matches").select("*").eq("created_by", user_id)
@@ -215,12 +214,12 @@ def get_matches(season: str = None, team_id: str = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{match_id}", response_model=MatchWithDetailsResponse)
-def get_match(match_id: str):
+def get_match(match_id: str, user_id: str = Depends(get_current_user_id)):
     """
     Get a specific match with all details including appearances.
     """
     try:
-        user_id = USER_ID
+        # user_id = USER_ID # This line is removed as per the edit hint
         
         # Get the match
         response = supabase.table("matches").select("*").eq("id", match_id).eq("created_by", user_id).execute()

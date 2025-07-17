@@ -67,10 +67,11 @@ CREATE TABLE player_stats (
     UNIQUE(player_id, season, gameweek)
 );
 
--- TEAM STATS
-DROP TABLE IF EXISTS team_stats CASCADE;
-CREATE TABLE team_stats (
+-- PLAYER GAMEWEEK STATS
+DROP TABLE IF EXISTS player_gameweek_stats CASCADE;
+CREATE TABLE player_gameweek_stats (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    player_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
     team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
     team_name TEXT NOT NULL,
     gameweek INTEGER NOT NULL,
@@ -78,9 +79,29 @@ CREATE TABLE team_stats (
     goals INTEGER NOT NULL DEFAULT 0,
     cumulative_goals INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(player_id, season, gameweek)
+);
+CREATE INDEX IF NOT EXISTS idx_player_gameweek_stats_player_id ON player_gameweek_stats(player_id);
+CREATE INDEX IF NOT EXISTS idx_player_gameweek_stats_team_id ON player_gameweek_stats(team_id);
+
+-- TEAM STATS (cumulative per gameweek)
+DROP TABLE IF EXISTS team_stats CASCADE;
+CREATE TABLE team_stats (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    season TEXT NOT NULL,
+    gameweek INTEGER NOT NULL,
+    games_played INTEGER NOT NULL DEFAULT 0,
+    goals_scored INTEGER NOT NULL DEFAULT 0,
+    goals_conceded INTEGER NOT NULL DEFAULT 0,
+    wins INTEGER NOT NULL DEFAULT 0,
+    losses INTEGER NOT NULL DEFAULT 0,
+    draws INTEGER NOT NULL DEFAULT 0,
+    win_rate FLOAT NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(team_id, season, gameweek)
 );
+CREATE INDEX IF NOT EXISTS idx_team_stats_team_id ON team_stats(team_id);
 
 -- Indexes for performance (optional but recommended)
 CREATE INDEX IF NOT EXISTS idx_teams_created_by ON teams(created_by);

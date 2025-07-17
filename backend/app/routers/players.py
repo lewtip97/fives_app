@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List
 from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
+from backend.app.auth import get_current_user_id
 
 load_dotenv()
 
@@ -26,15 +27,13 @@ class PlayerResponse(BaseModel):
     created_by: str
     created_at: str
 
-USER_ID = "00000000-0000-0000-0000-000000000000"
-
 @router.post("/", response_model=PlayerResponse)
-def create_player(player: PlayerCreate):
+def create_player(player: PlayerCreate, user_id: str = Depends(get_current_user_id)):
     try:
         response = supabase.table("players").insert({
             "name": player.name,
             "team_id": player.team_id,
-            "created_by": USER_ID,
+            "created_by": user_id,
             "created_at": "now()"
         }).execute()
         if not response.data:
@@ -44,17 +43,17 @@ def create_player(player: PlayerCreate):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/", response_model=List[PlayerResponse])
-def get_players():
+def get_players(user_id: str = Depends(get_current_user_id)):
     try:
-        response = supabase.table("players").select("*").eq("created_by", USER_ID).execute()
+        response = supabase.table("players").select("*").eq("created_by", user_id).execute()
         return response.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{player_id}", response_model=PlayerResponse)
-def get_player(player_id: str):
+def get_player(player_id: str, user_id: str = Depends(get_current_user_id)):
     try:
-        response = supabase.table("players").select("*").eq("id", player_id).eq("created_by", USER_ID).execute()
+        response = supabase.table("players").select("*").eq("id", player_id).eq("created_by", user_id).execute()
         if not response.data:
             raise HTTPException(status_code=404, detail="Player not found")
         return response.data[0]
@@ -64,12 +63,12 @@ def get_player(player_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/{player_id}", response_model=PlayerResponse)
-def update_player(player_id: str, player: PlayerCreate):
+def update_player(player_id: str, player: PlayerCreate, user_id: str = Depends(get_current_user_id)):
     try:
         response = supabase.table("players").update({
             "name": player.name,
             "team_id": player.team_id
-        }).eq("id", player_id).eq("created_by", USER_ID).execute()
+        }).eq("id", player_id).eq("created_by", user_id).execute()
         if not response.data:
             raise HTTPException(status_code=404, detail="Player not found")
         return response.data[0]
@@ -79,9 +78,9 @@ def update_player(player_id: str, player: PlayerCreate):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/{player_id}")
-def delete_player(player_id: str):
+def delete_player(player_id: str, user_id: str = Depends(get_current_user_id)):
     try:
-        response = supabase.table("players").delete().eq("id", player_id).eq("created_by", USER_ID).execute()
+        response = supabase.table("players").delete().eq("id", player_id).eq("created_by", user_id).execute()
         if not response.data:
             raise HTTPException(status_code=404, detail="Player not found")
         return {"message": "Player deleted successfully"}

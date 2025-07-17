@@ -5,3 +5,5 @@ pages/__pycache__/
 *.pyc
 
 .env
+
+get_jwt.py
