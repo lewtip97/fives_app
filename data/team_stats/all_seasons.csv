@@ -36,6 +36,7 @@ Ash,34,0,6
 Ash,35,0,6
 Ash,36,1,7
 Ash,37,1,8
+Ash,38,3,11
 Baker,1,0,0
 Baker,2,0,0
 Baker,3,0,0
@@ -73,6 +74,7 @@ Baker,34,0,0
 Baker,35,0,0
 Baker,36,0,0
 Baker,37,0,0
+Baker,38,0,0
 Bruce,1,1,1
 Bruce,2,2,3
 Bruce,3,0,3
@@ -110,6 +112,7 @@ Bruce,34,0,17
 Bruce,35,0,17
 Bruce,36,1,18
 Bruce,37,0,18
+Bruce,38,1,19
 Jack J,1,0,0
 Jack J,2,0,0
 Jack J,3,0,0
@@ -147,6 +150,7 @@ Jack J,34,0,0
 Jack J,35,0,0
 Jack J,36,0,0
 Jack J,37,0,0
+Jack J,38,0,0
 Jake H,1,0,0
 Jake H,2,0,0
 Jake H,3,0,0
@@ -184,6 +188,7 @@ Jake H,34,0,9
 Jake H,35,1,10
 Jake H,36,0,10
 Jake H,37,2,12
+Jake H,38,0,12
 Keenan,1,0,0
 Keenan,2,0,0
 Keenan,3,0,0
@@ -221,6 +226,7 @@ Keenan,34,0,0
 Keenan,35,0,0
 Keenan,36,0,0
 Keenan,37,0,0
+Keenan,38,0,0
 Lewis T,1,2,2
 Lewis T,2,0,2
 Lewis T,3,0,2
@@ -258,6 +264,7 @@ Lewis T,34,2,50
 Lewis T,35,1,51
 Lewis T,36,0,51
 Lewis T,37,3,54
+Lewis T,38,1,55
 Logan,1,2,2
 Logan,2,1,3
 Logan,3,0,3
@@ -295,6 +302,7 @@ Logan,34,0,13
 Logan,35,0,13
 Logan,36,0,13
 Logan,37,0,13
+Logan,38,0,13
 Rich,1,0,0
 Rich,2,0,0
 Rich,3,0,0
@@ -332,6 +340,7 @@ Rich,34,0,0
 Rich,35,0,0
 Rich,36,0,0
 Rich,37,0,0
+Rich,38,0,0
 Sam G,1,2,2
 Sam G,2,0,2
 Sam G,3,0,2
@@ -369,6 +378,7 @@ Sam G,34,0,2
 Sam G,35,0,2
 Sam G,36,0,2
 Sam G,37,0,2
+Sam G,38,0,2
 Sam M,1,0,0
 Sam M,2,1,1
 Sam M,3,0,1
@@ -406,6 +416,7 @@ Sam M,34,0,10
 Sam M,35,0,10
 Sam M,36,0,10
 Sam M,37,0,10
+Sam M,38,0,10
 Sam T,1,2,2
 Sam T,2,0,2
 Sam T,3,0,2
@@ -443,6 +454,7 @@ Sam T,34,1,20
 Sam T,35,0,20
 Sam T,36,1,21
 Sam T,37,0,21
+Sam T,38,0,21
 TG,1,0,0
 TG,2,0,0
 TG,3,0,0
@@ -480,3 +492,4 @@ TG,34,1,4
 TG,35,0,4
 TG,36,0,4
 TG,37,0,4
+TG,38,0,4
