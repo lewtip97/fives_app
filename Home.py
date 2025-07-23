@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 
 st.set_page_config(layout="wide")
 
-st.title("Bieslas Rejects")
+st.title("Bielsas Rejects")
 st.write("Up the rejects!")
 
 # Load precomputed data
