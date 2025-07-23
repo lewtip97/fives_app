@@ -45,7 +45,7 @@ def admin_page():
     # Add new result section
     st.header('Add New Result')
 
-    gameweek = st.number_input('Gameweek', min_value=1, max_value=38, key='gameweek')
+    gameweek = st.number_input('Gameweek', min_value=1, max_value=100, key='gameweek')
     season = st.text_input('Season', 'Prem S1', key='season')
     date = st.date_input('Date', datetime.today(), key='date')
     opponent = st.text_input('Opponent', key='opponent')
