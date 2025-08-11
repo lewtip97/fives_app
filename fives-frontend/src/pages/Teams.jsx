@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { theme } from '../theme'
+import { teamsApi, playersApi } from '../services/api'
 
-function Teams({ user }) {
+function Teams({ user, onViewTeam }) {
   const [teams, setTeams] = useState([])
   const [loading, setLoading] = useState(false)
   const [showCreateForm, setShowCreateForm] = useState(false)
@@ -9,6 +10,46 @@ function Teams({ user }) {
   const [teamSize, setTeamSize] = useState(5)
   const [players, setPlayers] = useState([])
   const [newPlayerName, setNewPlayerName] = useState('')
+  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, teamId: null, teamName: '', type: '' })
+
+  // Load teams on component mount
+  useEffect(() => {
+    loadTeams()
+  }, [])
+
+  const loadTeams = async () => {
+    setLoading(true)
+    try {
+      const teamsData = await teamsApi.getTeams()
+      
+      // For each team, get the player count
+      const teamsWithPlayerCount = await Promise.all(
+        teamsData.map(async (team) => {
+          try {
+            const players = await playersApi.getPlayers()
+            const teamPlayers = players.filter(player => player.team_id === team.id)
+            return {
+              ...team,
+              playerCount: teamPlayers.length
+            }
+          } catch (error) {
+            console.error(`Error loading players for team ${team.id}:`, error)
+            return {
+              ...team,
+              playerCount: 0
+            }
+          }
+        })
+      )
+      
+      setTeams(teamsWithPlayerCount)
+    } catch (error) {
+      console.error('Error loading teams:', error)
+      alert('Failed to load teams: ' + error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleCreateTeam = async (e) => {
     e.preventDefault()
@@ -20,22 +61,37 @@ function Teams({ user }) {
 
     setLoading(true)
     try {
-      // TODO: Call your backend API to create team
-      const newTeam = {
-        id: Date.now().toString(), // Temporary ID
+      // First create the team
+      const teamData = {
         name: newTeamName,
-        teamSize: teamSize,
-        players: players,
-        created_at: new Date().toISOString(),
+        team_size: teamSize,
       }
       
-      setTeams([...teams, newTeam])
+      const createdTeam = await teamsApi.createTeam(teamData)
+      
+      // Then create all the players for this team
+      const playerPromises = players.map(player => 
+        playersApi.createPlayer({
+          name: player.name,
+          team_id: createdTeam.id
+        })
+      )
+      
+      await Promise.all(playerPromises)
+      
+      // Reload teams to get the updated list
+      await loadTeams()
+      
+      // Reset form
       setNewTeamName('')
       setTeamSize(5)
       setPlayers([])
       setShowCreateForm(false)
+      
+      alert('Team created successfully!')
     } catch (error) {
       console.error('Error creating team:', error)
+      alert('Failed to create team: ' + error.message)
     } finally {
       setLoading(false)
     }
@@ -43,11 +99,10 @@ function Teams({ user }) {
 
   const handleAddPlayer = (e) => {
     e.preventDefault()
+    e.stopPropagation()
+    
     if (!newPlayerName.trim()) return
-    if (players.length >= teamSize) {
-      alert(`Team is full (${teamSize} players maximum)`)
-      return
-    }
+
     
     const newPlayer = {
       id: Date.now().toString(),
@@ -60,6 +115,28 @@ function Teams({ user }) {
 
   const handleRemovePlayer = (playerId) => {
     setPlayers(players.filter(player => player.id !== playerId))
+  }
+
+  const handleDeleteTeam = (teamId, teamName) => {
+    setDeleteConfirm({ show: true, teamId, teamName, type: 'team' })
+  }
+
+  const confirmDelete = async () => {
+    if (deleteConfirm.type === 'team') {
+      try {
+        await teamsApi.deleteTeam(deleteConfirm.teamId)
+        await loadTeams()
+        alert('Team deleted successfully!')
+      } catch (error) {
+        console.error('Error deleting team:', error)
+        alert('Failed to delete team: ' + error.message)
+      }
+    }
+    setDeleteConfirm({ show: false, teamId: null, teamName: '', type: '' })
+  }
+
+  const cancelDelete = () => {
+    setDeleteConfirm({ show: false, teamId: null, teamName: '', type: '' })
   }
 
   return (
@@ -107,7 +184,7 @@ function Teams({ user }) {
         </button>
         
         <button
-          onClick={() => {/* TODO: Load teams */}}
+          onClick={loadTeams}
           style={{
             ...theme.styles.button.secondary,
             padding: '16px 32px',
@@ -116,7 +193,7 @@ function Teams({ user }) {
             fontWeight: theme.typography.fontWeights.semibold,
           }}
         >
-          View All Teams
+          {loading ? 'Loading...' : 'View All Teams'}
         </button>
       </div>
 
@@ -172,7 +249,7 @@ function Teams({ user }) {
                 fontFamily: theme.typography.fontFamily,
                 fontWeight: theme.typography.fontWeights.medium,
               }}>
-                Team Size (players per side)
+                Match Format (players per side)
               </label>
               <select
                 value={teamSize}
@@ -206,38 +283,36 @@ function Teams({ user }) {
                   fontFamily: theme.typography.fontFamily,
                   fontWeight: theme.typography.fontWeights.medium,
                 }}>
-                  Players ({players.length}/{teamSize})
+                  Players ({players.length})
                 </label>
-                {players.length > 0 && (
-                  <span style={{ 
-                    fontSize: '14px', 
-                    color: theme.colors.textSecondary,
-                    fontFamily: theme.typography.fontFamily,
-                  }}>
-                    {teamSize - players.length} spots remaining
-                  </span>
-                )}
+
               </div>
 
               {/* Add Player Form */}
-              {players.length < teamSize && (
-                <form onSubmit={handleAddPlayer} style={{ marginBottom: 16 }}>
+              {(
+                <div style={{ marginBottom: 16 }}>
                   <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end' }}>
                     <div style={{ flex: 1 }}>
                       <input
                         type="text"
                         value={newPlayerName}
                         onChange={(e) => setNewPlayerName(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault()
+                            handleAddPlayer(e)
+                          }
+                        }}
                         placeholder="Enter player name..."
                         style={{
                           ...theme.styles.input,
                           width: '100%',
                         }}
-                        required
                       />
                     </div>
                     <button
-                      type="submit"
+                      type="button"
+                      onClick={handleAddPlayer}
                       style={{
                         ...theme.styles.button.primary,
                         padding: '12px 16px',
@@ -247,7 +322,7 @@ function Teams({ user }) {
                       Add Player
                     </button>
                   </div>
-                </form>
+                </div>
               )}
 
               {/* Players List */}
@@ -380,7 +455,7 @@ function Teams({ user }) {
                     fontFamily: theme.typography.fontFamily,
                     marginBottom: 4,
                   }}>
-                    {team.teamSize}-a-side • {team.players?.length || 0} players
+                    {team.playerCount || 0} players • {team.team_size}-a-side format
                   </p>
                   <p style={{ 
                     fontSize: '12px', 
@@ -391,15 +466,35 @@ function Teams({ user }) {
                   </p>
                 </div>
                 
-                <button
-                  style={{
-                    ...theme.styles.button.secondary,
-                    padding: '8px 16px',
-                    fontSize: '14px',
-                  }}
-                >
-                  View Details
-                </button>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button
+                    onClick={() => onViewTeam(team.id)}
+                    style={{
+                      ...theme.styles.button.secondary,
+                      padding: '8px 16px',
+                      fontSize: '14px',
+                    }}
+                  >
+                    View Details
+                  </button>
+                  <button
+                    onClick={() => handleDeleteTeam(team.id, team.name)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      color: theme.colors.error,
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      fontFamily: theme.typography.fontFamily,
+                      padding: '8px 16px',
+                      borderRadius: 4,
+                    }}
+                    onMouseEnter={(e) => e.target.style.background = 'rgba(255, 107, 107, 0.1)'}
+                    onMouseLeave={(e) => e.target.style.background = 'none'}
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -443,6 +538,84 @@ function Teams({ user }) {
           >
             Create Your First Team
           </button>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm.show && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+        }}>
+          <div style={{
+            background: theme.colors.card,
+            padding: 32,
+            borderRadius: 12,
+            maxWidth: 400,
+            width: '90%',
+            border: `1px solid ${theme.colors.border}`,
+            boxShadow: theme.colors.shadow,
+          }}>
+            <h3 style={{
+              fontSize: '20px',
+              fontWeight: theme.typography.fontWeights.bold,
+              color: theme.colors.error,
+              fontFamily: theme.typography.fontFamily,
+              marginBottom: 16,
+            }}>
+              Confirm Deletion
+            </h3>
+            
+            <p style={{
+              fontSize: '16px',
+              color: theme.colors.textSecondary,
+              fontFamily: theme.typography.fontFamily,
+              marginBottom: 24,
+              lineHeight: 1.5,
+            }}>
+              {deleteConfirm.type === 'team' && 
+                `Are you sure you want to delete "${deleteConfirm.teamName}"? This will also delete all players, matches, and stats associated with this team. This action cannot be undone.`
+              }
+            </p>
+            
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+              <button
+                onClick={cancelDelete}
+                style={{
+                  ...theme.styles.button.secondary,
+                  padding: '10px 20px',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                style={{
+                  background: theme.colors.error,
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: 6,
+                  fontSize: '14px',
+                  fontWeight: theme.typography.fontWeights.medium,
+                  fontFamily: theme.typography.fontFamily,
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => e.target.style.background = '#d32f2f'}
+                onMouseLeave={(e) => e.target.style.background = theme.colors.error}
+              >
+                Delete {deleteConfirm.type === 'team' ? 'Team' : 'Player'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

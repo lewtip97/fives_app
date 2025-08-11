@@ -4,7 +4,7 @@ from typing import List
 from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
-from backend.app.auth import get_current_user_id
+from ..auth import get_current_user_id
 
 load_dotenv()
 

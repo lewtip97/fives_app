@@ -4,7 +4,7 @@ from typing import List
 from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
-from backend.app.auth import get_current_user_id
+from ..auth import get_current_user_id
 
 load_dotenv()
 
@@ -73,6 +73,8 @@ def create_full_match(match: MatchFullIn, user_id: str = Depends(get_current_use
             if not app_resp.data:
                 raise HTTPException(status_code=400, detail=f"Failed to create appearance for player {app.player_id}")
 
+        # 4. Auto-generate stats for this team (after transaction is committed)
+        # We'll return the match_id and let the frontend trigger stats generation
         return {"message": "Match, opponent, and appearances created successfully", "match_id": match_id}
     except HTTPException:
         raise

@@ -4,7 +4,7 @@ from typing import List
 from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
-from backend.app.auth import get_current_user_id
+from ..auth import get_current_user_id
 
 load_dotenv()
 
@@ -42,6 +42,7 @@ def create_opponent(opponent: OpponentCreate, user_id: str = Depends(get_current
     try:
         response = supabase.table("opponents").insert({
             "name": opponent.name,
+            "team_id": opponent.team_id,
             "created_by": user_id,
             "created_at": "now()"
         }).execute()
@@ -67,7 +68,8 @@ def get_opponent(opponent_id: str, user_id: str = Depends(get_current_user_id)):
 def update_opponent(opponent_id: str, opponent: OpponentCreate, user_id: str = Depends(get_current_user_id)):
     try:
         response = supabase.table("opponents").update({
-            "name": opponent.name
+            "name": opponent.name,
+            "team_id": opponent.team_id
         }).eq("id", opponent_id).eq("created_by", user_id).execute()
         if not response.data:
             raise HTTPException(status_code=404, detail="Opponent not found")

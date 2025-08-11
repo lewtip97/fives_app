@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS teams CASCADE;
 CREATE TABLE teams (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
+    team_size INTEGER DEFAULT 5,
     created_by UUID NOT NULL, -- Supabase Auth UID
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -15,6 +16,7 @@ DROP TABLE IF EXISTS players CASCADE;
 CREATE TABLE players (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
+    team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
     position TEXT,
     created_by UUID NOT NULL, -- Supabase Auth UID
     created_at TIMESTAMPTZ DEFAULT NOW()
@@ -25,6 +27,7 @@ DROP TABLE IF EXISTS opponents CASCADE;
 CREATE TABLE opponents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
+    team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
     created_by UUID NOT NULL, -- Supabase Auth UID
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -106,7 +109,9 @@ CREATE INDEX IF NOT EXISTS idx_team_stats_team_id ON team_stats(team_id);
 -- Indexes for performance (optional but recommended)
 CREATE INDEX IF NOT EXISTS idx_teams_created_by ON teams(created_by);
 CREATE INDEX IF NOT EXISTS idx_players_created_by ON players(created_by);
+CREATE INDEX IF NOT EXISTS idx_players_team_id ON players(team_id);
 CREATE INDEX IF NOT EXISTS idx_opponents_created_by ON opponents(created_by);
+CREATE INDEX IF NOT EXISTS idx_opponents_team_id ON opponents(team_id);
 CREATE INDEX IF NOT EXISTS idx_matches_team_id ON matches(team_id);
 CREATE INDEX IF NOT EXISTS idx_matches_opponent_id ON matches(opponent_id);
 CREATE INDEX IF NOT EXISTS idx_appearances_match_id ON appearances(match_id);

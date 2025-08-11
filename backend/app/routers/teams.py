@@ -4,9 +4,7 @@ from typing import List, Optional
 from supabase import create_client, Client
 import os
 from dotenv import load_dotenv
-from generate_player_gameweek_stats import recalculate_player_gameweek_stats
-from generate_team_stats import main as recalculate_team_stats
-from backend.app.auth import get_current_user_id
+from ..auth import get_current_user_id
 
 load_dotenv()
 
@@ -20,10 +18,12 @@ router = APIRouter(prefix="/teams", tags=["teams"])
 # Pydantic models for request/response
 class TeamCreate(BaseModel):
     name: str
+    team_size: int = 5
 
 class TeamResponse(BaseModel):
     id: str
     name: str
+    team_size: int
     created_by: str
     created_at: str
 
@@ -37,6 +37,17 @@ class TeamStatsResponse(BaseModel):
     cumulative_goals: int
     created_at: str
 
+@router.get("/debug/user")
+def debug_user(user_id: str = Depends(get_current_user_id)):
+    """
+    Debug endpoint to check user authentication.
+    """
+    return {
+        "user_id": user_id,
+        "user_id_type": type(user_id).__name__,
+        "user_id_length": len(user_id) if user_id else 0
+    }
+
 @router.post("/", response_model=TeamResponse)
 def create_team(team: TeamCreate, user_id: str = Depends(get_current_user_id)):
     """
@@ -45,9 +56,11 @@ def create_team(team: TeamCreate, user_id: str = Depends(get_current_user_id)):
     try:
         response = supabase.table("teams").insert({
             "name": team.name,
+            "team_size": team.team_size,
             "created_by": user_id,
             "created_at": "now()"
         }).execute()
+        
         if not response.data:
             raise HTTPException(status_code=400, detail="Failed to create team")
         return response.data[0]
@@ -149,24 +162,4 @@ def get_all_team_stats(season: Optional[str] = None, user_id: str = Depends(get_
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/stats/recalculate/player-gameweek")
-async def trigger_player_gameweek_stats(team_id: str = Query(..., description="Team ID to recalculate stats for"), user_id: str = Depends(get_current_user_id)):
-    """
-    Trigger recalculation of player gameweek stats for a specific team and write to the database.
-    """
-    try:
-        recalculate_player_gameweek_stats(team_id=team_id)
-        return {"status": "success", "message": f"Player gameweek stats recalculated for team {team_id}."}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
 
-@router.post("/stats/recalculate/team")
-async def trigger_team_stats(team_id: str = Query(..., description="Team ID to recalculate stats for"), user_id: str = Depends(get_current_user_id)):
-    """
-    Trigger recalculation of team stats for a specific team and write to the database.
-    """
-    try:
-        recalculate_team_stats(team_id=team_id)
-        return {"status": "success", "message": f"Team stats recalculated for team {team_id}."}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
