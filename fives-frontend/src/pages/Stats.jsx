@@ -111,6 +111,7 @@ function Stats({ user }) {
         playerTotals[playerId] = {
           player_id: playerId,
           player_name: stat.player_name || 'Unknown',
+          profile_picture: stat.profile_picture,
           total_appearances: 0,
           total_goals: 0
         }
@@ -424,15 +425,60 @@ function Stats({ user }) {
             Most Appearances
           </h3>
           
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={topPlayers.appearances}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="player_name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="total_appearances" fill={theme.colors.primary} />
-            </BarChart>
-          </ResponsiveContainer>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {topPlayers.appearances.map((player, index) => (
+              <div key={player.player_id} style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: 12,
+                background: theme.colors.content,
+                borderRadius: 8,
+                border: `1px solid ${theme.colors.border}`,
+              }}>
+                <div style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  background: theme.colors.primary,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: theme.typography.fontWeights.bold,
+                }}>
+                  {player.profile_picture ? (
+                    <img 
+                      src={player.profile_picture} 
+                      alt={player.player_name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    player.player_name.charAt(0).toUpperCase()
+                  )}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{
+                    fontSize: '16px',
+                    fontWeight: theme.typography.fontWeights.semibold,
+                    color: theme.colors.textPrimary,
+                    fontFamily: theme.typography.fontFamily,
+                  }}>
+                    {player.player_name}
+                  </div>
+                  <div style={{
+                    fontSize: '14px',
+                    color: theme.colors.textSecondary,
+                    fontFamily: theme.typography.fontFamily,
+                  }}>
+                    {player.total_appearances} appearances
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Most Goals */}
@@ -450,15 +496,60 @@ function Stats({ user }) {
             Most Goals
           </h3>
           
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={topPlayers.goals}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="player_name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="total_goals" fill={theme.colors.success} />
-            </BarChart>
-          </ResponsiveContainer>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {topPlayers.goals.map((player, index) => (
+              <div key={player.player_id} style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: 12,
+                background: theme.colors.content,
+                borderRadius: 8,
+                border: `1px solid ${theme.colors.border}`,
+              }}>
+                <div style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  overflow: 'hidden',
+                  background: theme.colors.success,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '16px',
+                  fontWeight: theme.typography.fontWeights.bold,
+                }}>
+                  {player.profile_picture ? (
+                    <img 
+                      src={player.profile_picture} 
+                      alt={player.player_name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    player.player_name.charAt(0).toUpperCase()
+                  )}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{
+                    fontSize: '16px',
+                    fontWeight: theme.typography.fontWeights.semibold,
+                    color: theme.colors.textPrimary,
+                    fontFamily: theme.typography.fontFamily,
+                  }}>
+                    {player.player_name}
+                  </div>
+                  <div style={{
+                    fontSize: '14px',
+                    color: theme.colors.textSecondary,
+                    fontFamily: theme.typography.fontFamily,
+                  }}>
+                    {player.total_goals} goals
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

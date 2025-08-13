@@ -8,6 +8,7 @@ import TeamOverview from './pages/TeamOverview'
 import Landing from './pages/Landing'
 import LogMatch from './pages/LogMatch'
 import Stats from './pages/Stats'
+import PlayerStats from './pages/PlayerStats'
 import { MatchCacheProvider } from './contexts/MatchCacheContext'
 import { theme } from './theme'
 import './App.css'
@@ -49,6 +50,12 @@ function App() {
           { label: 'Dashboard', onClick: () => setCurrentPage('landing') },
           { label: 'Stats' }
         ]
+      case 'player-stats':
+        return [
+          { label: 'Dashboard', onClick: () => setCurrentPage('landing') },
+          { label: 'Teams', onClick: () => setCurrentPage('teams') },
+          { label: 'Player Stats' }
+        ]
       default:
         return [
           { label: 'Dashboard' }
@@ -83,6 +90,15 @@ function App() {
     setCurrentPage('teams')
   }
 
+  const handleViewPlayerStats = (playerId) => {
+    console.log('handleViewPlayerStats called with playerId:', playerId)
+    setSelectedTeamId(null)
+    setCurrentPage('player-stats')
+    // Store playerId in localStorage for the PlayerStats component to access
+    localStorage.setItem('selectedPlayerId', playerId)
+    console.log('Navigation set to player-stats, playerId stored in localStorage')
+  }
+
   const handleNavigate = (page) => {
     setCurrentPage(page)
     if (page !== 'team-overview') {
@@ -95,7 +111,7 @@ function App() {
       case 'landing':
         return <Landing user={user} onNavigate={handleNavigate} />
       case 'teams':
-        return <Teams user={user} onViewTeam={handleViewTeam} />
+        return <Teams user={user} onViewTeam={handleViewTeam} onViewPlayerStats={handleViewPlayerStats} />
       case 'team-overview':
         return <TeamOverview user={user} teamId={selectedTeamId} onBack={handleBackToTeams} />
       case 'log-match':
@@ -109,6 +125,8 @@ function App() {
         )
       case 'stats':
         return <Stats user={user} />
+      case 'player-stats':
+        return <PlayerStats user={user} onNavigate={handleNavigate} />
       default:
         return <Landing user={user} onNavigate={handleNavigate} />
     }

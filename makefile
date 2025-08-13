@@ -28,6 +28,9 @@ train_all: train_goals_model train_goals_against_model
 run_app:
 	streamlit run Home.py
 
+start_server:
+	cd backend && python start_server.py
+
 clean_models:
 	rm -f $(MODELS_DIR)/*.joblib
 

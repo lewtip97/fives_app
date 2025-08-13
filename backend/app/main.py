@@ -20,12 +20,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Initialize Supabase client first
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+# Then include routers
 app.include_router(teams.router)
 app.include_router(players.router)
 app.include_router(matches.router)
 app.include_router(opponents.router)
 app.include_router(stats.router)
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 
 @app.get("/")

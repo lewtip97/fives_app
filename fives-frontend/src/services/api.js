@@ -16,12 +16,28 @@ const apiCall = async (endpoint, options = {}) => {
   
   console.log('API Call:', endpoint, 'Token:', token ? 'Present' : 'Missing')
   
+  // Don't set Content-Type for FormData (let browser set it)
+  const isFormData = options.body instanceof FormData
+  
+  const headers = {}
+  
+  // Only set Content-Type for non-FormData requests
+  if (!isFormData) {
+    headers['Content-Type'] = 'application/json'
+  }
+  
+  // Add Authorization header if token exists
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`
+  }
+  
+  // Add any custom headers
+  if (options.headers) {
+    Object.assign(headers, options.headers)
+  }
+  
   const config = {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` }),
-      ...options.headers,
-    },
+    headers: headers,
     ...options,
   }
 
@@ -95,6 +111,35 @@ export const playersApi = {
     return apiCall('/players/', {
       method: 'POST',
       body: JSON.stringify(playerData),
+    })
+  },
+
+  // Update player profile picture via URL
+  updatePlayerPicture: async (playerId, profilePicture) => {
+    return apiCall(`/players/${playerId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ profile_picture: profilePicture }),
+    })
+  },
+
+  // Upload player profile picture file
+  uploadPlayerPicture: async (playerId, file) => {
+    console.log('DEBUG: uploadPlayerPicture called with:', { playerId, file })
+    console.log('DEBUG: File details:', {
+      name: file.name,
+      type: file.type,
+      size: file.size
+    })
+    
+    const formData = new FormData()
+    formData.append('file', file)
+    
+    console.log('DEBUG: FormData created:', formData)
+    
+    return apiCall(`/players/${playerId}/upload-picture`, {
+      method: 'POST',
+      body: formData,
+      // Don't override headers - let apiCall set the Authorization header
     })
   },
 
@@ -221,7 +266,7 @@ export const statsApi = {
   },
 
   // Get player stats for a team
-  getPlayerStats: async (teamId) => {
+  getTeamPlayerStats: async (teamId) => {
     return apiCall(`/stats/players/${teamId}`)
   },
 
@@ -233,5 +278,10 @@ export const statsApi = {
   // Get comprehensive team overview
   getTeamOverview: async (teamId) => {
     return apiCall(`/stats/overview/${teamId}`)
+  },
+
+  // Get individual player stats
+  getPlayerStats: async (playerId) => {
+    return apiCall(`/stats/player/${playerId}`)
   },
 } 

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { theme } from '../theme'
 import { teamsApi, playersApi } from '../services/api'
+import PlayerPictureUpload from '../components/PlayerPictureUpload'
 
-function Teams({ user, onViewTeam }) {
+function Teams({ user, onViewTeam, onViewPlayerStats }) {
   const [teams, setTeams] = useState([])
   const [loading, setLoading] = useState(false)
   const [showCreateForm, setShowCreateForm] = useState(false)
@@ -10,6 +11,7 @@ function Teams({ user, onViewTeam }) {
   const [teamSize, setTeamSize] = useState(5)
   const [players, setPlayers] = useState([])
   const [newPlayerName, setNewPlayerName] = useState('')
+  const [existingPlayers, setExistingPlayers] = useState({}) // teamId -> players[]
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, teamId: null, teamName: '', type: '' })
 
   // Load teams on component mount
@@ -22,12 +24,19 @@ function Teams({ user, onViewTeam }) {
     try {
       const teamsData = await teamsApi.getTeams()
       
-      // For each team, get the player count
+      // For each team, get the player count and players
       const teamsWithPlayerCount = await Promise.all(
         teamsData.map(async (team) => {
           try {
             const players = await playersApi.getPlayers()
             const teamPlayers = players.filter(player => player.team_id === team.id)
+            
+            // Store existing players for this team
+            setExistingPlayers(prev => ({
+              ...prev,
+              [team.id]: teamPlayers
+            }))
+            
             return {
               ...team,
               playerCount: teamPlayers.length
@@ -115,6 +124,69 @@ function Teams({ user, onViewTeam }) {
 
   const handleRemovePlayer = (playerId) => {
     setPlayers(players.filter(player => player.id !== playerId))
+  }
+
+  const handlePictureUpdated = (teamId, playerId, newPictureUrl) => {
+    setExistingPlayers(prev => ({
+      ...prev,
+      [teamId]: prev[teamId]?.map(player => 
+        player.id === playerId 
+          ? { ...player, profile_picture: newPictureUrl }
+          : player
+      ) || []
+    }))
+  }
+
+  const handleAddPlayerToTeam = async (teamId, playerName) => {
+    if (!playerName.trim()) return
+    
+    try {
+      const newPlayer = await playersApi.createPlayer({
+        name: playerName.trim(),
+        team_id: teamId
+      })
+      
+      // Update existing players for this team
+      setExistingPlayers(prev => ({
+        ...prev,
+        [teamId]: [...(prev[teamId] || []), newPlayer]
+      }))
+      
+      // Update team player count
+      setTeams(prev => prev.map(team => 
+        team.id === teamId 
+          ? { ...team, playerCount: (team.playerCount || 0) + 1 }
+          : team
+      ))
+      
+      return newPlayer
+    } catch (error) {
+      console.error('Error adding player:', error)
+      alert('Failed to add player: ' + error.message)
+      return null
+    }
+  }
+
+  const handleRemovePlayerFromTeam = async (teamId, playerId) => {
+    try {
+      await playersApi.deletePlayer(playerId)
+      
+      // Update existing players for this team
+      setExistingPlayers(prev => ({
+        ...prev,
+        [teamId]: prev[teamId]?.filter(player => player.id !== playerId) || []
+      }))
+      
+      // Update team player count
+      setTeams(prev => prev.map(team => 
+        team.id === teamId 
+          ? { ...team, playerCount: Math.max(0, (team.playerCount || 0) - 1) }
+          : team
+      ))
+    } catch (error) {
+      console.error('Error removing player:', error)
+      alert('Failed to remove player: ' + error.message)
+    }
   }
 
   const handleDeleteTeam = (teamId, teamName) => {
@@ -427,75 +499,17 @@ function Teams({ user, onViewTeam }) {
           
           <div style={{ display: 'grid', gap: 16 }}>
             {teams.map((team) => (
-              <div
-                key={team.id}
-                style={{
-                  padding: 20,
-                  background: theme.colors.content,
-                  borderRadius: 12,
-                  border: `1px solid ${theme.colors.border}`,
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <div>
-                  <h4 style={{ 
-                    fontSize: '18px', 
-                    fontWeight: theme.typography.fontWeights.semibold,
-                    color: theme.colors.textPrimary,
-                    fontFamily: theme.typography.fontFamily,
-                    marginBottom: 4,
-                  }}>
-                    {team.name}
-                  </h4>
-                  <p style={{ 
-                    fontSize: '14px', 
-                    color: theme.colors.textSecondary,
-                    fontFamily: theme.typography.fontFamily,
-                    marginBottom: 4,
-                  }}>
-                    {team.playerCount || 0} players • {team.team_size}-a-side format
-                  </p>
-                  <p style={{ 
-                    fontSize: '12px', 
-                    color: theme.colors.textMuted,
-                    fontFamily: theme.typography.fontFamily,
-                  }}>
-                    Created {new Date(team.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-                
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button
-                    onClick={() => onViewTeam(team.id)}
-                    style={{
-                      ...theme.styles.button.secondary,
-                      padding: '8px 16px',
-                      fontSize: '14px',
-                    }}
-                  >
-                    View Details
-                  </button>
-                  <button
-                    onClick={() => handleDeleteTeam(team.id, team.name)}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: theme.colors.error,
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      fontFamily: theme.typography.fontFamily,
-                      padding: '8px 16px',
-                      borderRadius: 4,
-                    }}
-                    onMouseEnter={(e) => e.target.style.background = 'rgba(255, 107, 107, 0.1)'}
-                    onMouseLeave={(e) => e.target.style.background = 'none'}
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
+                      <TeamCard
+          key={team.id}
+          team={team}
+          players={existingPlayers[team.id] || []}
+          onViewTeam={onViewTeam}
+          onDeleteTeam={handleDeleteTeam}
+          onAddPlayer={handleAddPlayerToTeam}
+          onRemovePlayer={handleRemovePlayerFromTeam}
+          onPictureUpdated={handlePictureUpdated}
+          onViewPlayerStats={onViewPlayerStats}
+        />
             ))}
           </div>
         </div>
@@ -616,6 +630,248 @@ function Teams({ user, onViewTeam }) {
               </button>
             </div>
           </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// TeamCard component for displaying team information and managing players
+function TeamCard({ team, players, onViewTeam, onDeleteTeam, onAddPlayer, onRemovePlayer, onPictureUpdated, onViewPlayerStats }) {
+  console.log('TeamCard rendering:', { team, players, showPlayers: false })
+  const [showPlayers, setShowPlayers] = useState(false)
+  const [newPlayerName, setNewPlayerName] = useState('')
+  const [addingPlayer, setAddingPlayer] = useState(false)
+
+  const handleAddPlayerToExistingTeam = async (e) => {
+    e.preventDefault()
+    if (!newPlayerName.trim()) return
+    
+    setAddingPlayer(true)
+    try {
+      await onAddPlayer(team.id, newPlayerName)
+      setNewPlayerName('')
+    } finally {
+      setAddingPlayer(false)
+    }
+  }
+
+  return (
+    <div style={{
+      padding: 20,
+      background: theme.colors.content,
+      borderRadius: 12,
+      border: `1px solid ${theme.colors.border}`,
+    }}>
+      {/* Team Header */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 16,
+      }}>
+        <div>
+          <h4 style={{ 
+            fontSize: '18px', 
+            fontWeight: theme.typography.fontWeights.semibold,
+            color: theme.colors.textPrimary,
+            fontFamily: theme.typography.fontFamily,
+            marginBottom: 4,
+          }}>
+            {team.name}
+          </h4>
+          <p style={{ 
+            fontSize: '14px', 
+            color: theme.colors.textSecondary,
+            fontFamily: theme.typography.fontFamily,
+            marginBottom: 4,
+          }}>
+            {team.playerCount || 0} players • {team.team_size}-a-side format
+          </p>
+          <p style={{ 
+            fontSize: '12px', 
+            color: theme.colors.textMuted,
+            fontFamily: theme.typography.fontFamily,
+          }}>
+            Created {new Date(team.created_at).toLocaleDateString()}
+          </p>
+        </div>
+        
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={() => {
+              console.log('Manage Players clicked, current showPlayers:', showPlayers)
+              setShowPlayers(!showPlayers)
+            }}
+            style={{
+              ...theme.styles.button.secondary,
+              padding: '8px 16px',
+              fontSize: '14px',
+            }}
+          >
+            {showPlayers ? 'Hide Players' : 'Manage Players'}
+          </button>
+          <button
+            onClick={() => onViewTeam(team.id)}
+            style={{
+              ...theme.styles.button.secondary,
+              padding: '8px 16px',
+              fontSize: '14px',
+            }}
+          >
+            View Details
+          </button>
+          <button
+            onClick={() => onViewPlayerStats(team.id)}
+            style={{
+              ...theme.styles.button.secondary,
+              padding: '8px 16px',
+              fontSize: '14px',
+            }}
+          >
+            View Stats
+          </button>
+          <button
+            onClick={() => onDeleteTeam(team.id, team.name)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: theme.colors.error,
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontFamily: theme.typography.fontFamily,
+              padding: '8px 16px',
+              borderRadius: 4,
+            }}
+            onMouseEnter={(e) => e.target.style.background = 'rgba(255, 107, 107, 0.1)'}
+            onMouseLeave={(e) => e.target.style.background = 'none'}
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+
+      {/* Players Management Section */}
+      {showPlayers && (
+        <div style={{
+          borderTop: `1px solid ${theme.colors.border}`,
+          paddingTop: 16,
+        }}>
+          {console.log('Rendering players section, players:', players)}
+          <h5 style={{
+            fontSize: '16px',
+            fontWeight: theme.typography.fontWeights.semibold,
+            color: theme.colors.textPrimary,
+            fontFamily: theme.typography.fontFamily,
+            marginBottom: 16,
+          }}>
+            Players Management
+          </h5>
+          
+          {/* Debug info */}
+          <div style={{ 
+            fontSize: '12px', 
+            color: theme.colors.textMuted, 
+            marginBottom: 16,
+            padding: '8px',
+            background: theme.colors.card,
+            borderRadius: 4,
+          }}>
+            Debug: {players.length} players loaded for team {team.id}
+          </div>
+
+          {/* Add New Player Form */}
+          <form onSubmit={handleAddPlayerToExistingTeam} style={{ marginBottom: 20 }}>
+            <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end' }}>
+              <div style={{ flex: 1 }}>
+                <input
+                  type="text"
+                  value={newPlayerName}
+                  onChange={(e) => setNewPlayerName(e.target.value)}
+                  placeholder="Enter new player name..."
+                  style={{
+                    ...theme.styles.input,
+                    width: '100%',
+                  }}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={addingPlayer || !newPlayerName.trim()}
+                style={{
+                  ...theme.styles.button.primary,
+                  padding: '12px 16px',
+                  fontSize: '14px',
+                  opacity: addingPlayer || !newPlayerName.trim() ? 0.6 : 1,
+                }}
+              >
+                {addingPlayer ? 'Adding...' : 'Add Player'}
+              </button>
+            </div>
+          </form>
+
+          {/* Players List with Picture Upload */}
+          {players.length > 0 ? (
+            <div style={{ display: 'grid', gap: 16 }}>
+              {players.map((player) => (
+                <div key={player.id} style={{
+                  padding: 16,
+                  background: theme.colors.card,
+                  borderRadius: 8,
+                  border: `1px solid ${theme.colors.border}`,
+                }}>
+                  <div style={{ marginBottom: 8, fontSize: '12px', color: theme.colors.textMuted }}>
+                    Player ID: {player.id} | Name: {player.name}
+                  </div>
+                  {(() => {
+                    try {
+                      return (
+                        <PlayerPictureUpload 
+                          player={player}
+                          onPictureUpdated={(newPictureUrl) => onPictureUpdated(team.id, player.id, newPictureUrl)}
+                        />
+                      )
+                    } catch (error) {
+                      console.error('Error rendering PlayerPictureUpload:', error)
+                      return (
+                        <div style={{ color: theme.colors.error, padding: '8px' }}>
+                          Error rendering player picture upload: {error.message}
+                        </div>
+                      )
+                    }
+                  })()}
+                  <div style={{ marginTop: 12, textAlign: 'right', display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                    <button
+                      onClick={() => onRemovePlayer(team.id, player.id)}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: theme.colors.error,
+                        cursor: 'pointer',
+                        fontSize: '14px',
+                        fontFamily: theme.typography.fontFamily,
+                        padding: '8px 16px',
+                        borderRadius: 4,
+                      }}
+                      onMouseEnter={(e) => e.target.style.background = 'rgba(255, 107, 107, 0.1)'}
+                      onMouseLeave={(e) => e.target.style.background = 'none'}
+                    >
+                      Remove Player
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{
+              padding: 20,
+              textAlign: 'center',
+              color: theme.colors.textSecondary,
+              fontFamily: theme.typography.fontFamily,
+            }}>
+              No players yet. Add your first player above!
+            </div>
+          )}
         </div>
       )}
     </div>

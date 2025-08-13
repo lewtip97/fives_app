@@ -17,7 +17,7 @@ CREATE TABLE players (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
-    position TEXT,
+    profile_picture TEXT, -- URL to player's profile picture
     created_by UUID NOT NULL, -- Supabase Auth UID
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
