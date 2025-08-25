@@ -6,6 +6,8 @@ import os
 from dotenv import load_dotenv
 from ..auth import get_current_user_id
 from ..services.stats_generator import generate_all_stats, generate_player_gameweek_stats, generate_team_stats
+from ..services.prediction_service import prediction_service
+from ..services.activity_tracker import activity_tracker
 
 load_dotenv()
 
@@ -97,32 +99,54 @@ def get_team_overview(team_id: str, user_id: str = Depends(get_current_user_id))
         total_goals_scored = sum(match["score1"] for match in matches)
         total_goals_conceded = sum(match["score2"] for match in matches)
         
-        # Get player stats
-        player_stats_response = supabase.table("player_gameweek_stats").select("*").eq("team_id", team_id).execute()
-        player_stats = player_stats_response.data
+        # Get player stats from appearances table (correct source for appearances and goals)
+        # First get all matches for this team, then get appearances for those matches
+        match_ids = [match["id"] for match in matches]
         
-        # Get player names and profile pictures separately
-        if player_stats:
-            player_ids = list(set([stat["player_id"] for stat in player_stats]))
-            players_response = supabase.table("players").select("id, name, profile_picture").in_("id", player_ids).execute()
-            players = {p["id"]: {"name": p["name"], "profile_picture": p.get("profile_picture")} for p in players_response.data}
-        else:
-            players = {}
+        if not match_ids:
+            return {"team_id": team_id, "player_stats": []}
         
-        # Calculate player totals
+        # Get all appearances for these matches
+        appearances = supabase.table('appearances').select('*').in_('match_id', match_ids).execute()
+        
+        if not appearances.data:
+            return {"team_id": team_id, "player_stats": []}
+        
+        # Process appearances to get player totals
         player_totals = {}
-        for stat in player_stats:
-            player_id = stat["player_id"]
+        
+        for appearance in appearances.data:
+            player_id = appearance['player_id']
+            
             if player_id not in player_totals:
                 player_totals[player_id] = {
-                    "player_id": player_id,
-                    "player_name": players.get(player_id, {}).get("name", "Unknown"),
-                    "profile_picture": players.get(player_id, {}).get("profile_picture"),
-                    "total_appearances": 0,
-                    "total_goals": 0
+                    'player_id': player_id,
+                    'total_appearances': 0,
+                    'total_goals': 0,
+                    'total_assists': 0,
+                    'total_clean_sheets': 0,
+                    'total_yellow_cards': 0,
+                    'total_red_cards': 0
                 }
-            player_totals[player_id]["total_appearances"] += 1
-            player_totals[player_id]["total_goals"] += stat.get("goals", 0)
+            
+            # Count this appearance
+            player_totals[player_id]['total_appearances'] += 1
+            
+            # Add stats
+            player_totals[player_id]['total_goals'] += appearance.get('goals', 0)
+            player_totals[player_id]['total_assists'] += appearance.get('assists', 0)
+            player_totals[player_id]['total_clean_sheets'] += appearance.get('clean_sheets', 0)
+            player_totals[player_id]['total_yellow_cards'] += appearance.get('yellow_cards', 0)
+            player_totals[player_id]['total_red_cards'] += appearance.get('red_cards', 0)
+        
+        # Convert to list and add player names
+        player_stats = []
+        for player_id, totals in player_totals.items():
+            # Get player name
+            player = supabase.table('players').select('name').eq('id', player_id).execute()
+            if player.data:
+                totals['player_name'] = player.data[0]['name']
+                player_stats.append(totals)
         
         return {
             "team": team,
@@ -134,7 +158,7 @@ def get_team_overview(team_id: str, user_id: str = Depends(get_current_user_id))
             "total_goals_scored": total_goals_scored,
             "total_goals_conceded": total_goals_conceded,
             "matches": matches,
-            "player_stats": list(player_totals.values())
+            "player_stats": player_stats
         }
         
     except HTTPException:
@@ -237,3 +261,69 @@ def get_individual_player_stats(player_id: str, user_id: str = Depends(get_curre
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/predict")
+def predict_match_outcome(
+    team_id: str,
+    opponent_id: str,
+    selected_players: List[str],
+    user_id: str = Depends(get_current_user_id)
+):
+    """
+    Predict match outcome and player performance for a specific match.
+    """
+    try:
+        # Verify team belongs to user
+        team_check = supabase.table("teams").select("id, name").eq("id", team_id).eq("created_by", user_id).execute()
+        if not team_check.data:
+            raise HTTPException(status_code=404, detail="Team not found or access denied")
+        
+        # Generate prediction using the ML models
+        prediction = prediction_service.predict_match_outcome(team_id, opponent_id, selected_players)
+        
+        return prediction
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/recent-activities")
+def get_recent_activities(user_id: str = Depends(get_current_user_id)):
+    """
+    Get recent activities for the home page including matches, milestones, and team changes.
+    """
+    try:
+        activities = activity_tracker.get_recent_activities(user_id, limit=10)
+        return activities
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/test-activities")
+def test_activities():
+    """
+    Test endpoint to verify the activity tracker is working.
+    """
+    try:
+        # Test with a dummy user ID
+        test_user_id = "00000000-0000-0000-0000-000000000000"
+        activities = activity_tracker.get_recent_activities(test_user_id, limit=5)
+        return {
+            "status": "success",
+            "message": "Activity tracker is working",
+            "activities_count": len(activities),
+            "activities": activities
+        }
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {
+            "status": "error",
+            "message": str(e),
+            "activities_count": 0,
+            "activities": []
+        }

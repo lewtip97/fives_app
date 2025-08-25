@@ -1,5 +1,5 @@
 // Theme configuration for consistent black and yellow styling
-export const theme = {
+const theme = {
   colors: {
     // Primary colors
     primary: '#FFD700', // Golden yellow
@@ -146,4 +146,4 @@ export const theme = {
   },
 }
 
-export default theme 
+export { theme } 

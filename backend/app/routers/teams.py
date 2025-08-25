@@ -37,17 +37,6 @@ class TeamStatsResponse(BaseModel):
     cumulative_goals: int
     created_at: str
 
-@router.get("/debug/user")
-def debug_user(user_id: str = Depends(get_current_user_id)):
-    """
-    Debug endpoint to check user authentication.
-    """
-    return {
-        "user_id": user_id,
-        "user_id_type": type(user_id).__name__,
-        "user_id_length": len(user_id) if user_id else 0
-    }
-
 @router.post("/", response_model=TeamResponse)
 def create_team(team: TeamCreate, user_id: str = Depends(get_current_user_id)):
     """
@@ -67,14 +56,12 @@ def create_team(team: TeamCreate, user_id: str = Depends(get_current_user_id)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/", response_model=List[TeamResponse])
-def get_teams(user_id: str = Depends(get_current_user_id)):
-    """
-    Get all teams for the current user.
-    """
+@router.get("/")
+async def get_teams(user_id: str = Depends(get_current_user_id)):
+    """Get all teams for the current user"""
     try:
-        response = supabase.table("teams").select("*").eq("created_by", user_id).execute()
-        return response.data
+        teams = supabase.table('teams').select('*').eq('created_by', user_id).execute()
+        return teams.data
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

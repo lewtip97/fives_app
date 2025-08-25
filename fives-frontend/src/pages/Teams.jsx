@@ -3,7 +3,7 @@ import { theme } from '../theme'
 import { teamsApi, playersApi } from '../services/api'
 import PlayerPictureUpload from '../components/PlayerPictureUpload'
 
-function Teams({ user, onViewTeam, onViewPlayerStats }) {
+function Teams({ user, onViewTeam, onViewTeamStats, onViewPlayerStats }) {
   const [teams, setTeams] = useState([])
   const [loading, setLoading] = useState(false)
   const [showCreateForm, setShowCreateForm] = useState(false)
@@ -12,7 +12,7 @@ function Teams({ user, onViewTeam, onViewPlayerStats }) {
   const [players, setPlayers] = useState([])
   const [newPlayerName, setNewPlayerName] = useState('')
   const [existingPlayers, setExistingPlayers] = useState({}) // teamId -> players[]
-  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, teamId: null, teamName: '', type: '' })
+  const [deleteConfirm, setDeleteConfirm] = useState({ show: false, teamId: null, playerId: null, teamName: '', type: '' })
 
   // Load teams on component mount
   useEffect(() => {
@@ -168,6 +168,22 @@ function Teams({ user, onViewTeam, onViewPlayerStats }) {
   }
 
   const handleRemovePlayerFromTeam = async (teamId, playerId) => {
+    // Find the player to get their name for the confirmation
+    const player = existingPlayers[teamId]?.find(p => p.id === playerId)
+    if (player) {
+      setDeleteConfirm({ 
+        show: true, 
+        teamId, 
+        playerId, 
+        playerName: player.name, 
+        type: 'player' 
+      })
+    } else {
+      console.error('Player not found for removal:', playerId)
+    }
+  }
+
+  const confirmRemovePlayer = async (teamId, playerId) => {
     try {
       await playersApi.deletePlayer(playerId)
       
@@ -183,6 +199,7 @@ function Teams({ user, onViewTeam, onViewPlayerStats }) {
           ? { ...team, playerCount: Math.max(0, (team.playerCount || 0) - 1) }
           : team
       ))
+      
     } catch (error) {
       console.error('Error removing player:', error)
       alert('Failed to remove player: ' + error.message)
@@ -190,7 +207,7 @@ function Teams({ user, onViewTeam, onViewPlayerStats }) {
   }
 
   const handleDeleteTeam = (teamId, teamName) => {
-    setDeleteConfirm({ show: true, teamId, teamName, type: 'team' })
+    setDeleteConfirm({ show: true, teamId, playerId: null, teamName, type: 'team' })
   }
 
   const confirmDelete = async () => {
@@ -203,14 +220,32 @@ function Teams({ user, onViewTeam, onViewPlayerStats }) {
         console.error('Error deleting team:', error)
         alert('Failed to delete team: ' + error.message)
       }
+    } else if (deleteConfirm.type === 'player') {
+      try {
+        await confirmRemovePlayer(deleteConfirm.teamId, deleteConfirm.playerId)
+        alert('Player removed successfully!')
+      } catch (error) {
+        console.error('Error removing player:', error)
+        alert('Failed to remove player: ' + error.message)
+      }
     }
-    setDeleteConfirm({ show: false, teamId: null, teamName: '', type: '' })
+    setDeleteConfirm({ show: false, teamId: null, playerId: null, teamName: '', type: '' })
   }
 
   const cancelDelete = () => {
-    setDeleteConfirm({ show: false, teamId: null, teamName: '', type: '' })
+    setDeleteConfirm({ show: false, teamId: null, playerId: null, teamName: '', type: '' })
   }
 
+  // Add a simple test to see if the component is rendering at all
+  if (!onViewTeamStats) {
+    console.error('onViewTeamStats is not defined!')
+    return (
+      <div style={{ padding: '40px', textAlign: 'center', color: '#ff6b6b' }}>
+        Error: onViewTeamStats function is missing
+      </div>
+    )
+  }
+  
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto' }}>
       {/* Header Section */}
@@ -585,7 +620,7 @@ function Teams({ user, onViewTeam, onViewPlayerStats }) {
               fontFamily: theme.typography.fontFamily,
               marginBottom: 16,
             }}>
-              Confirm Deletion
+              {deleteConfirm.type === 'team' ? 'Confirm Team Deletion' : 'Confirm Player Removal'}
             </h3>
             
             <p style={{
@@ -597,6 +632,9 @@ function Teams({ user, onViewTeam, onViewPlayerStats }) {
             }}>
               {deleteConfirm.type === 'team' && 
                 `Are you sure you want to delete "${deleteConfirm.teamName}"? This will also delete all players, matches, and stats associated with this team. This action cannot be undone.`
+              }
+              {deleteConfirm.type === 'player' && 
+                `Are you sure you want to remove "${deleteConfirm.playerName}" from the team? This will also delete all their match appearances and stats. This action cannot be undone.`
               }
             </p>
             
@@ -626,7 +664,7 @@ function Teams({ user, onViewTeam, onViewPlayerStats }) {
                 onMouseEnter={(e) => e.target.style.background = '#d32f2f'}
                 onMouseLeave={(e) => e.target.style.background = theme.colors.error}
               >
-                Delete {deleteConfirm.type === 'team' ? 'Team' : 'Player'}
+                {deleteConfirm.type === 'team' ? 'Delete Team' : 'Remove Player'}
               </button>
             </div>
           </div>
@@ -638,7 +676,6 @@ function Teams({ user, onViewTeam, onViewPlayerStats }) {
 
 // TeamCard component for displaying team information and managing players
 function TeamCard({ team, players, onViewTeam, onDeleteTeam, onAddPlayer, onRemovePlayer, onPictureUpdated, onViewPlayerStats }) {
-  console.log('TeamCard rendering:', { team, players, showPlayers: false })
   const [showPlayers, setShowPlayers] = useState(false)
   const [newPlayerName, setNewPlayerName] = useState('')
   const [addingPlayer, setAddingPlayer] = useState(false)
@@ -700,7 +737,6 @@ function TeamCard({ team, players, onViewTeam, onDeleteTeam, onAddPlayer, onRemo
         <div style={{ display: 'flex', gap: 8 }}>
           <button
             onClick={() => {
-              console.log('Manage Players clicked, current showPlayers:', showPlayers)
               setShowPlayers(!showPlayers)
             }}
             style={{
@@ -712,7 +748,7 @@ function TeamCard({ team, players, onViewTeam, onDeleteTeam, onAddPlayer, onRemo
             {showPlayers ? 'Hide Players' : 'Manage Players'}
           </button>
           <button
-            onClick={() => onViewTeam(team.id)}
+            onClick={() => setShowPlayers(true)}
             style={{
               ...theme.styles.button.secondary,
               padding: '8px 16px',
@@ -720,16 +756,6 @@ function TeamCard({ team, players, onViewTeam, onDeleteTeam, onAddPlayer, onRemo
             }}
           >
             View Details
-          </button>
-          <button
-            onClick={() => onViewPlayerStats(team.id)}
-            style={{
-              ...theme.styles.button.secondary,
-              padding: '8px 16px',
-              fontSize: '14px',
-            }}
-          >
-            View Stats
           </button>
           <button
             onClick={() => onDeleteTeam(team.id, team.name)}
@@ -757,7 +783,6 @@ function TeamCard({ team, players, onViewTeam, onDeleteTeam, onAddPlayer, onRemo
           borderTop: `1px solid ${theme.colors.border}`,
           paddingTop: 16,
         }}>
-          {console.log('Rendering players section, players:', players)}
           <h5 style={{
             fontSize: '16px',
             fontWeight: theme.typography.fontWeights.semibold,
@@ -768,18 +793,6 @@ function TeamCard({ team, players, onViewTeam, onDeleteTeam, onAddPlayer, onRemo
             Players Management
           </h5>
           
-          {/* Debug info */}
-          <div style={{ 
-            fontSize: '12px', 
-            color: theme.colors.textMuted, 
-            marginBottom: 16,
-            padding: '8px',
-            background: theme.colors.card,
-            borderRadius: 4,
-          }}>
-            Debug: {players.length} players loaded for team {team.id}
-          </div>
-
           {/* Add New Player Form */}
           <form onSubmit={handleAddPlayerToExistingTeam} style={{ marginBottom: 20 }}>
             <div style={{ display: 'flex', gap: 12, alignItems: 'flex-end' }}>

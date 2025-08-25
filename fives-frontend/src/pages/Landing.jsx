@@ -1,7 +1,46 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { theme } from '../theme'
+import { statsApi } from '../services/api'
 
 function Landing({ user, onNavigate }) {
+  const [activities, setActivities] = useState([])
+  const [loadingActivities, setLoadingActivities] = useState(true)
+  
+  useEffect(() => {
+    const fetchActivities = async () => {
+      try {
+        setLoadingActivities(true)
+        const activitiesData = await statsApi.getRecentActivities()
+        setActivities(activitiesData)
+      } catch (error) {
+        console.error('Error fetching activities:', error)
+        // Fallback to empty activities array
+        setActivities([])
+      } finally {
+        setLoadingActivities(false)
+      }
+    }
+
+    if (user) {
+      fetchActivities()
+    } else {
+      // No user, skipping activities fetch
+    }
+  }, [user])
+
+  const getActivityColor = (activityType, activityColor) => {
+    switch (activityType) {
+      case 'match':
+        return theme.colors.primary
+      case 'milestone':
+        return theme.colors.success
+      case 'team_change':
+        return theme.colors.info || '#6366f1'
+      default:
+        return theme.colors.textSecondary
+    }
+  }
+
   const [quickActions] = useState([
     {
       title: "Manage Teams",
@@ -20,6 +59,12 @@ function Landing({ user, onNavigate }) {
       description: "Analyze team performance, player stats, and trends",
       action: () => onNavigate('stats'),
       color: theme.colors.warning,
+    },
+    {
+      title: "Match Forecaster",
+      description: "Predict match outcomes and player performance",
+      action: () => onNavigate('match-forecaster'),
+      color: theme.colors.info || '#6366f1',
     },
   ])
 
@@ -58,10 +103,10 @@ function Landing({ user, onNavigate }) {
       {/* Quick Actions Grid */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
         gap: 24,
         marginBottom: 48,
-        maxWidth: 1000,
+        maxWidth: 1200,
         margin: '0 auto 48px auto',
       }}>
         {quickActions.map((action, index) => (
@@ -127,6 +172,13 @@ function Landing({ user, onNavigate }) {
                     <path d="M6 20v-6"/>
                   </svg>
                 )}
+                {action.title === "Match Forecaster" && (
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 17v.01"/>
+                  </svg>
+                )}
               </div>
               
                             <h3 style={{
@@ -171,105 +223,96 @@ function Landing({ user, onNavigate }) {
           display: 'grid',
           gap: 16,
         }}>
-          <div style={{
-            padding: 20,
-            background: theme.colors.content,
-            borderRadius: 8,
-            border: `1px solid ${theme.colors.border}`,
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{
-                width: 40,
-                height: 40,
-                background: theme.colors.primary,
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontSize: '18px',
-                fontWeight: theme.typography.fontWeights.bold,
-              }}>
-                M
-              </div>
-              <div style={{ flex: 1 }}>
-                <h4 style={{
-                  fontSize: '16px',
-                  fontWeight: theme.typography.fontWeights.semibold,
-                  color: theme.colors.textPrimary,
-                  fontFamily: theme.typography.fontFamily,
-                  margin: '0 0 4px 0',
-                }}>
-                  Red Rockets vs Blue Dragons
-                </h4>
-                                 <p style={{
-                   fontSize: '14px',
-                   color: theme.colors.textSecondary,
-                   fontFamily: theme.typography.fontFamily,
-                   margin: 0,
-                 }}>
-                   Final Score: 3-1 • Lewis scored 2 goals • Stats updated
-                 </p>
-              </div>
-              <div style={{
-                fontSize: '12px',
-                color: theme.colors.textMuted,
-                fontFamily: theme.typography.fontFamily,
-              }}>
-                2 hours ago
-              </div>
+          {loadingActivities ? (
+            <div style={{
+              padding: 40,
+              textAlign: 'center',
+              color: theme.colors.textSecondary,
+              fontFamily: theme.typography.fontFamily,
+            }}>
+              Loading recent activities...
             </div>
-          </div>
-
-          <div style={{
-            padding: 20,
-            background: theme.colors.content,
-            borderRadius: 8,
-            border: `1px solid ${theme.colors.border}`,
-          }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{
-                width: 40,
-                height: 40,
-                background: theme.colors.success,
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontSize: '18px',
-                fontWeight: theme.typography.fontWeights.bold,
+          ) : activities.length > 0 ? (
+            activities.map((activity) => (
+              <div key={activity.id} style={{
+                padding: 20,
+                background: theme.colors.content,
+                borderRadius: 8,
+                border: `1px solid ${theme.colors.border}`,
               }}>
-                P
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{
+                    width: 40,
+                    height: 40,
+                    background: getActivityColor(activity.type, activity.color),
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    fontSize: '18px',
+                    fontWeight: theme.typography.fontWeights.bold,
+                  }}>
+                    {activity.icon}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <h4 style={{
+                      fontSize: '16px',
+                      fontWeight: theme.typography.fontWeights.semibold,
+                      color: theme.colors.textPrimary,
+                      fontFamily: theme.typography.fontFamily,
+                      margin: '0 0 4px 0',
+                    }}>
+                      {activity.title}
+                    </h4>
+                    <p style={{
+                      fontSize: '14px',
+                      color: theme.colors.textSecondary,
+                      fontFamily: theme.typography.fontFamily,
+                      margin: '0 0 2px 0',
+                    }}>
+                      {activity.description}
+                    </p>
+                    {activity.details && (
+                      <p style={{
+                        fontSize: '12px',
+                        color: theme.colors.textMuted,
+                        fontFamily: theme.typography.fontFamily,
+                        margin: 0,
+                        fontStyle: 'italic',
+                      }}>
+                        {activity.details}
+                      </p>
+                    )}
+                  </div>
+                  <div style={{
+                    fontSize: '12px',
+                    color: theme.colors.textMuted,
+                    fontFamily: theme.typography.fontFamily,
+                  }}>
+                    {activity.timestamp ? 
+                      new Date(activity.timestamp).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      }) : 
+                      'Unknown time'
+                    }
+                  </div>
+                </div>
               </div>
-              <div style={{ flex: 1 }}>
-                <h4 style={{
-                  fontSize: '16px',
-                  fontWeight: theme.typography.fontWeights.semibold,
-                  color: theme.colors.textPrimary,
-                  fontFamily: theme.typography.fontFamily,
-                  margin: '0 0 4px 0',
-                }}>
-                  New Player Added
-                </h4>
-                <p style={{
-                  fontSize: '14px',
-                  color: theme.colors.textSecondary,
-                  fontFamily: theme.typography.fontFamily,
-                  margin: 0,
-                }}>
-                  Tom joined Red Rockets team
-                </p>
-              </div>
-              <div style={{
-                fontSize: '12px',
-                color: theme.colors.textMuted,
-                fontFamily: theme.typography.fontFamily,
-              }}>
-                1 day ago
-              </div>
+            ))
+          ) : (
+            <div style={{
+              padding: 40,
+              textAlign: 'center',
+              color: theme.colors.textSecondary,
+              fontFamily: theme.typography.fontFamily,
+            }}>
+              No recent activity yet. Start by logging a match or adding players to your team!
             </div>
-          </div>
+          )}
         </div>
       </div>
 

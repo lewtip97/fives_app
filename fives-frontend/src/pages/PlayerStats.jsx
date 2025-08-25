@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { statsApi } from '../services/api'
 import { theme } from '../theme'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
 
-const PlayerStats = ({ onNavigate }) => {
-  console.log('PlayerStats component rendered with onNavigate:', onNavigate)
+const PlayerStats = ({ onNavigate, goBack }) => {
   const [playerStats, setPlayerStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -104,19 +103,27 @@ const PlayerStats = ({ onNavigate }) => {
 
   const { player, form = [], goals_over_time = [] } = playerStats
 
-  // Transform goals_over_time to include gameweek for x-axis
-  const goalsChartData = goals_over_time.map((match, index) => ({
-    ...match,
-    gameweek: index + 1, // Use index + 1 as gameweek
-    displayName: `GW${index + 1}` // Display name for x-axis
-  }))
+  // Transform goals_over_time to include gameweek for x-axis and calculate cumulative goals
+  const goalsChartData = goals_over_time.map((match, index) => {
+    // Calculate cumulative goals up to this point
+    const cumulativeGoals = goals_over_time
+      .slice(0, index + 1)
+      .reduce((sum, m) => sum + (m.goals || 0), 0)
+    
+    return {
+      ...match,
+      gameweek: index + 1, // Use index + 1 as gameweek
+      displayName: `GW${index + 1}`, // Display name for x-axis
+      cumulativeGoals: cumulativeGoals // Add cumulative goals
+    }
+  })
 
   return (
     <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
       {/* Header */}
       <div style={{ marginBottom: '30px' }}>
         <button
-          onClick={() => onNavigate('teams')}
+          onClick={goBack || (() => onNavigate('teams'))}
           style={{
             padding: '8px 16px',
             backgroundColor: 'transparent',
@@ -177,6 +184,16 @@ const PlayerStats = ({ onNavigate }) => {
           value={formatDecimal(playerStats.avg_goals_conceded_when_playing)}
           unit="goals/game"
         />
+        <MetricCard
+          title="Games Won"
+          value={Math.round(playerStats.win_rate * playerStats.total_appearances)}
+          unit="games"
+        />
+        <MetricCard
+          title="Games Lost"
+          value={Math.round((1 - playerStats.win_rate) * playerStats.total_appearances)}
+          unit="games"
+        />
       </div>
 
       {/* Charts Section */}
@@ -197,13 +214,28 @@ const PlayerStats = ({ onNavigate }) => {
             fontSize: '20px',
             fontWeight: theme.typography.fontWeights.semibold,
             color: theme.colors.textPrimary,
-            margin: '0 0 20px 0'
+            margin: '0 0 8px 0'
           }}>
-            Goals Over Time
+            Cumulative Goals Over Time
           </h3>
+          <p style={{
+            fontSize: '14px',
+            color: theme.colors.textSecondary,
+            margin: '0 0 20px 0',
+            fontStyle: 'italic'
+          }}>
+            Shows total goals scored up to each gameweek
+          </p>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={goalsChartData}>
               <CartesianGrid strokeDasharray="3 3" stroke={theme.colors.border} />
+              <Legend 
+                verticalAlign="top" 
+                height={36}
+                wrapperStyle={{
+                  paddingBottom: '10px'
+                }}
+              />
               <XAxis
                 dataKey="displayName"
                 angle={0}
@@ -221,18 +253,34 @@ const PlayerStats = ({ onNavigate }) => {
                   color: theme.colors.textPrimary
                 }}
                 labelStyle={{ color: theme.colors.textSecondary }}
-                formatter={(value, name, props) => [
-                  `${value} goals vs ${props.payload.opponent}`,
-                  'Goals'
-                ]}
+                formatter={(value, name, props) => {
+                  if (name === 'Cumulative Goals') {
+                    return [`${value} total goals`, 'Cumulative Goals']
+                  } else if (name === 'Match Goals') {
+                    return [`${value} goals this game`, 'Match Goals']
+                  }
+                  return [value, name]
+                }}
                 labelFormatter={(label) => `Gameweek ${label.replace("GW", "")} - ${goalsChartData.find(item => item.displayName === label)?.opponent || "Unknown"}`}
               />
+              {/* Cumulative Goals Line (Primary) */}
               <Line
                 type="monotone"
-                dataKey="goals"
+                dataKey="cumulativeGoals"
                 stroke={theme.colors.primary}
                 strokeWidth={3}
                 dot={{ fill: theme.colors.primary, strokeWidth: 2, r: 4 }}
+                name="Cumulative Goals"
+              />
+              {/* Individual Match Goals Line (Secondary) */}
+              <Line
+                type="monotone"
+                dataKey="goals"
+                stroke={theme.colors.warning}
+                strokeWidth={2}
+                dot={{ fill: theme.colors.warning, strokeWidth: 1, r: 3 }}
+                name="Match Goals"
+                strokeDasharray="3 3"
               />
             </LineChart>
           </ResponsiveContainer>
@@ -296,6 +344,112 @@ const PlayerStats = ({ onNavigate }) => {
             <span style={{ color: theme.colors.success }}>●</span> Win
             <span style={{ color: theme.colors.warning, marginLeft: '15px' }}>●</span> Draw
             <span style={{ color: theme.colors.error, marginLeft: '15px' }}>●</span> Loss
+          </div>
+        </div>
+      </div>
+
+      {/* Performance Trends */}
+      <div style={{
+        backgroundColor: theme.colors.backgroundSecondary,
+        borderRadius: '8px',
+        padding: '20px',
+        border: `1px solid ${theme.colors.border}`,
+        marginBottom: '30px'
+      }}>
+        <h3 style={{
+          fontSize: '20px',
+          fontWeight: theme.typography.fontWeights.semibold,
+          color: theme.colors.textPrimary,
+          margin: '0 0 20px 0'
+        }}>
+          Performance Trends
+        </h3>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '20px'
+        }}>
+          <div style={{
+            backgroundColor: theme.colors.backgroundPrimary,
+            padding: '16px',
+            borderRadius: '6px',
+            border: `1px solid ${theme.colors.border}`,
+            textAlign: 'center'
+          }}>
+            <div style={{
+              fontSize: '14px',
+              color: theme.colors.textSecondary,
+              marginBottom: '8px'
+            }}>
+              Goals in Last 5 Games
+            </div>
+            <div style={{
+              fontSize: '24px',
+              fontWeight: theme.typography.fontWeights.bold,
+              color: theme.colors.primary
+            }}>
+              {playerStats.recent_matches?.slice(0, 5).reduce((sum, match) => sum + (match.goals || 0), 0) || 0}
+            </div>
+          </div>
+          
+          <div style={{
+            backgroundColor: theme.colors.backgroundPrimary,
+            padding: '16px',
+            borderRadius: '6px',
+            border: `1px solid ${theme.colors.border}`,
+            textAlign: 'center'
+          }}>
+            <div style={{
+              fontSize: '14px',
+              color: theme.colors.textSecondary,
+              marginBottom: '8px'
+            }}>
+              Win Rate in Last 5
+            </div>
+            <div style={{
+              fontSize: '24px',
+              fontWeight: theme.typography.fontWeights.bold,
+              color: theme.colors.success
+            }}>
+              {(() => {
+                const recentMatches = playerStats.recent_matches?.slice(0, 5) || []
+                if (recentMatches.length === 0) return '0%'
+                const wins = recentMatches.filter(match => {
+                  const score1 = match.score1 || 0
+                  const score2 = match.score2 || 0
+                  return score1 > score2
+                }).length
+                return `${((wins / recentMatches.length) * 100).toFixed(0)}%`
+              })()}
+            </div>
+          </div>
+          
+          <div style={{
+            backgroundColor: theme.colors.backgroundPrimary,
+            padding: '16px',
+            borderRadius: '6px',
+            border: `1px solid ${theme.colors.border}`,
+            textAlign: 'center'
+          }}>
+            <div style={{
+              fontSize: '14px',
+              color: theme.colors.textSecondary,
+              marginBottom: '8px'
+            }}>
+              Avg Goals vs Recent Opponents
+            </div>
+            <div style={{
+              fontSize: '24px',
+              fontWeight: theme.typography.fontWeights.bold,
+              color: theme.colors.warning
+            }}>
+              {(() => {
+                const recentMatches = playerStats.recent_matches?.slice(0, 5) || []
+                if (recentMatches.length === 0) return '0.0'
+                const totalGoals = recentMatches.reduce((sum, match) => sum + (match.goals || 0), 0)
+                return (totalGoals / recentMatches.length).toFixed(1)
+              })()}
+            </div>
           </div>
         </div>
       </div>

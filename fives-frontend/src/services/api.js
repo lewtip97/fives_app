@@ -5,16 +5,12 @@ const API_BASE_URL = 'http://localhost:8000'
 // Helper function to get auth token
 const getAuthToken = async () => {
   const { data: { session } } = await supabase.auth.getSession()
-  console.log('Auth session:', session ? 'Present' : 'Missing')
-  console.log('Access token:', session?.access_token ? 'Present' : 'Missing')
   return session?.access_token
 }
 
 // Helper function for API calls
 const apiCall = async (endpoint, options = {}) => {
   const token = await getAuthToken()
-  
-  console.log('API Call:', endpoint, 'Token:', token ? 'Present' : 'Missing')
   
   // Don't set Content-Type for FormData (let browser set it)
   const isFormData = options.body instanceof FormData
@@ -41,11 +37,7 @@ const apiCall = async (endpoint, options = {}) => {
     ...options,
   }
 
-  console.log('Request config:', config)
-
   const response = await fetch(`${API_BASE_URL}${endpoint}`, config)
-  
-  console.log('Response status:', response.status, response.statusText)
   
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}))
@@ -122,25 +114,28 @@ export const playersApi = {
     })
   },
 
-  // Upload player profile picture file
-  uploadPlayerPicture: async (playerId, file) => {
-    console.log('DEBUG: uploadPlayerPicture called with:', { playerId, file })
-    console.log('DEBUG: File details:', {
-      name: file.name,
-      type: file.type,
-      size: file.size
-    })
-    
-    const formData = new FormData()
-    formData.append('file', file)
-    
-    console.log('DEBUG: FormData created:', formData)
-    
-    return apiCall(`/players/${playerId}/upload-picture`, {
-      method: 'POST',
-      body: formData,
-      // Don't override headers - let apiCall set the Authorization header
-    })
+  // Upload player picture
+  async uploadPlayerPicture(playerId, file) {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('player_id', playerId);
+
+      const response = await fetch(`/api/players/${playerId}/picture`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error uploading player picture:', error);
+      throw error;
+    }
   },
 
   // Get a specific player
@@ -283,5 +278,22 @@ export const statsApi = {
   // Get individual player stats
   getPlayerStats: async (playerId) => {
     return apiCall(`/stats/player/${playerId}`)
+  },
+
+  // Predict match outcome
+  predictMatch: async (teamId, opponentId, selectedPlayers) => {
+    return apiCall('/stats/predict', {
+      method: 'POST',
+      body: JSON.stringify({
+        team_id: teamId,
+        opponent_id: opponentId,
+        selected_players: selectedPlayers
+      }),
+    })
+  },
+
+  // Get recent activities for home page
+  getRecentActivities: async () => {
+    return apiCall('/stats/recent-activities')
   },
 } 

@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from ..auth import get_current_user_id
 from ..schemas import PlayerCreate, PlayerUpdate, PlayerResponse
 import uuid
+import time
 
 load_dotenv()
 
@@ -99,80 +100,64 @@ def delete_player(player_id: str, user_id: str = Depends(get_current_user_id)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/{player_id}/upload-picture")
+@router.post("/{player_id}/picture")
 async def upload_player_picture(
-    player_id: str, 
-    file: UploadFile = File(...), 
+    player_id: str,
+    file: UploadFile = File(...),
     user_id: str = Depends(get_current_user_id)
 ):
     """Upload a profile picture for a player"""
     try:
-        print(f"DEBUG: Starting upload for player {player_id}, user {user_id}")
-        print(f"DEBUG: File info - name: {file.filename}, content_type: {file.content_type}, size: {file.size}")
-        
-        # Verify player belongs to user
-        print(f"DEBUG: Verifying player ownership...")
-        player_check = supabase.table("players").select("id, name").eq("id", player_id).eq("created_by", user_id).execute()
-        print(f"DEBUG: Player check result: {player_check.data}")
+        # Verify the player exists and belongs to the user
+        player_check = supabase.table('players').select('id, team_id').eq('id', player_id).execute()
         
         if not player_check.data:
-            raise HTTPException(status_code=404, detail="Player not found or access denied")
+            raise HTTPException(status_code=404, detail="Player not found")
+        
+        # Verify user owns the team that contains this player
+        team_id = player_check.data[0]['team_id']
+        team_check = supabase.table('teams').select('id').eq('id', team_id).eq('created_by', user_id).execute()
+        
+        if not team_check.data:
+            raise HTTPException(status_code=403, detail="Not authorized to modify this player")
         
         # Validate file type
-        print(f"DEBUG: Validating file type: {file.content_type}")
-        if not file.content_type.startswith('image/'):
+        if not file.content_type or not file.content_type.startswith('image/'):
             raise HTTPException(status_code=400, detail="File must be an image")
         
         # Generate unique filename
         file_extension = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
-        filename = f"player_{player_id}_{uuid.uuid4().hex[:8]}.{file_extension}"
-        print(f"DEBUG: Generated filename: {filename}")
+        filename = f"player_{player_id}_{int(time.time())}.{file_extension}"
         
         # Read file content
-        print(f"DEBUG: Reading file content...")
         file_content = await file.read()
-        print(f"DEBUG: File content size: {len(file_content)} bytes")
         
         # Upload to Supabase Storage
-        print(f"DEBUG: Uploading to Supabase Storage...")
         storage_response = supabase.storage.from_('player-pictures').upload(
-            path=filename,
-            file=file_content,
-            file_options={"content-type": file.content_type}
+            filename,
+            file_content,
+            {"content-type": file.content_type}
         )
-        print(f"DEBUG: Storage response: {storage_response}")
         
-        if not storage_response:
-            raise HTTPException(status_code=500, detail="Failed to upload image")
+        if not storage_response.data:
+            raise HTTPException(status_code=500, detail="Failed to upload file to storage")
         
         # Get public URL
-        print(f"DEBUG: Getting public URL...")
         public_url = supabase.storage.from_('player-pictures').get_public_url(filename)
-        print(f"DEBUG: Public URL: {public_url}")
         
         # Update player record with new picture URL
-        print(f"DEBUG: Updating player record...")
-        update_response = supabase.table("players").update({
-            "profile_picture": public_url
-        }).eq("id", player_id).eq("created_by", user_id).execute()
-        print(f"DEBUG: Update response: {update_response.data}")
+        update_response = supabase.table('players').update({
+            'profile_picture': public_url
+        }).eq('id', player_id).execute()
         
         if not update_response.data:
-            raise HTTPException(status_code=500, detail="Failed to update player")
+            raise HTTPException(status_code=500, detail="Failed to update player record")
         
-        print(f"DEBUG: Upload completed successfully")
-        return {
-            "message": "Profile picture uploaded successfully",
-            "profile_picture": public_url,
-            "player": update_response.data[0]
-        }
+        return {"message": "Picture uploaded successfully", "url": public_url}
         
     except HTTPException:
-        print(f"DEBUG: HTTPException raised")
         raise
     except Exception as e:
-        print(f"DEBUG: Unexpected error: {str(e)}")
-        print(f"DEBUG: Error type: {type(e)}")
         import traceback
-        print(f"DEBUG: Traceback: {traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=str(e))
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")

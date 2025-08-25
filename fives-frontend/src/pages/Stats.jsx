@@ -3,7 +3,7 @@ import { theme } from '../theme'
 import { statsApi, teamsApi, playersApi } from '../services/api'
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
-function Stats({ user }) {
+function Stats({ user, selectedTeamId, onViewPlayerStats }) {
   const [teams, setTeams] = useState([])
   const [selectedTeam, setSelectedTeam] = useState(null)
   const [teamStats, setTeamStats] = useState(null)
@@ -14,6 +14,17 @@ function Stats({ user }) {
   useEffect(() => {
     loadTeams()
   }, [])
+
+  useEffect(() => {
+    if (selectedTeamId && teams.length > 0) {
+      const team = teams.find(t => t.id === selectedTeamId)
+      if (team) {
+        setSelectedTeam(team)
+      }
+    } else if (teams.length > 0 && !selectedTeam) {
+      setSelectedTeam(teams[0])
+    }
+  }, [selectedTeamId, teams])
 
   useEffect(() => {
     if (selectedTeam) {
@@ -43,6 +54,7 @@ function Stats({ user }) {
     try {
       // Load comprehensive team overview
       const teamOverview = await statsApi.getTeamOverview(selectedTeam.id)
+      
       setTeamStats(teamOverview)
       setPlayerStats(teamOverview.player_stats || [])
     } catch (error) {
@@ -101,34 +113,46 @@ function Stats({ user }) {
   }
 
   const getTopPlayers = () => {
-    if (!playerStats || playerStats.length === 0) return { appearances: [], goals: [] }
-    
-    // Group by player and calculate totals
-    const playerTotals = {}
-    playerStats.forEach(stat => {
-      const playerId = stat.player_id
-      if (!playerTotals[playerId]) {
-        playerTotals[playerId] = {
-          player_id: playerId,
-          player_name: stat.player_name || 'Unknown',
-          profile_picture: stat.profile_picture,
-          total_appearances: 0,
-          total_goals: 0
-        }
+    try {
+      
+      if (!playerStats || playerStats.length === 0) {
+        return { appearances: [], goals: [] }
       }
-      playerTotals[playerId].total_appearances += 1
-      playerTotals[playerId].total_goals += stat.goals || 0
-    })
-    
-    const players = Object.values(playerTotals)
-    
-    return {
-      appearances: players
-        .sort((a, b) => b.total_appearances - a.total_appearances)
-        .slice(0, 5),
-      goals: players
-        .sort((a, b) => b.total_goals - a.total_goals)
-        .slice(0, 5)
+      
+      const playerTotals = {}
+      
+      playerStats.forEach((stat, index) => {
+        if (!stat || !stat.player_id) {
+          return
+        }
+        
+        const playerId = stat.player_id
+        if (!playerTotals[playerId]) {
+          playerTotals[playerId] = {
+            player_id: playerId,
+            player_name: stat.player_name || 'Unknown',
+            profile_picture: stat.profile_picture,
+            total_appearances: stat.total_appearances || 0,  // Use the backend's calculated total
+            total_goals: stat.total_goals || 0              // Use the backend's calculated total
+          }
+        }
+        // No need to modify totals - they're already correct from the backend
+        
+      })
+      
+      const players = Object.values(playerTotals)
+      
+      return {
+        appearances: players
+          .sort((a, b) => b.total_appearances - a.total_appearances)
+          .slice(0, 5),
+        goals: players
+          .sort((a, b) => b.total_goals - a.total_goals)
+          .slice(0, 5)
+      }
+    } catch (error) {
+      console.error('Error in getTopPlayers:', error)
+      return { appearances: [], goals: [] }
     }
   }
 
@@ -161,6 +185,14 @@ function Stats({ user }) {
     return (
       <div style={{ textAlign: 'center', padding: 40 }}>
         <div style={{ color: theme.colors.textSecondary }}>No teams available</div>
+      </div>
+    )
+  }
+
+  if (!teamStats) {
+    return (
+      <div style={{ textAlign: 'center', padding: 40 }}>
+        <div style={{ color: theme.colors.textSecondary }}>No team statistics available</div>
       </div>
     )
   }
@@ -476,6 +508,21 @@ function Stats({ user }) {
                     {player.total_appearances} appearances
                   </div>
                 </div>
+                <button
+                  onClick={() => onViewPlayerStats(player.player_id)}
+                  style={{
+                    padding: '6px 12px',
+                    fontSize: '12px',
+                    backgroundColor: theme.colors.primary,
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontFamily: theme.typography.fontFamily,
+                  }}
+                >
+                  View Stats
+                </button>
               </div>
             ))}
           </div>
@@ -547,6 +594,21 @@ function Stats({ user }) {
                     {player.total_goals} goals
                   </div>
                 </div>
+                <button
+                  onClick={() => onViewPlayerStats(player.player_id)}
+                  style={{
+                    padding: '6px 12px',
+                    fontSize: '12px',
+                    backgroundColor: theme.colors.primary,
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontFamily: theme.typography.fontFamily,
+                  }}
+                >
+                  View Stats
+                </button>
               </div>
             ))}
           </div>

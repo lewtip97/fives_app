@@ -35,6 +35,16 @@ app.include_router(stats.router)
 def read_root():
     return {"message": "Fives App API"}
 
+@app.get("/health")
+def health_check():
+    """Health check endpoint for Docker and load balancers"""
+    try:
+        # Simple check that Supabase connection is working
+        supabase.table("teams").select("id").limit(1).execute()
+        return {"status": "healthy", "timestamp": "2024-01-01T00:00:00Z"}
+    except Exception as e:
+        return {"status": "unhealthy", "error": str(e), "timestamp": "2024-01-01T00:00:00Z"}
+
 @app.get("/appearances")
 def get_appearances():
     try:

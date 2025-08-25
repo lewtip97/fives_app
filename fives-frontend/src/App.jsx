@@ -9,6 +9,7 @@ import Landing from './pages/Landing'
 import LogMatch from './pages/LogMatch'
 import Stats from './pages/Stats'
 import PlayerStats from './pages/PlayerStats'
+import MatchForecaster from './pages/MatchForecaster'
 import { MatchCacheProvider } from './contexts/MatchCacheContext'
 import { theme } from './theme'
 import './App.css'
@@ -17,6 +18,7 @@ function App() {
   const [user, setUser] = useState(null)
   const [currentPage, setCurrentPage] = useState('landing')
   const [selectedTeamId, setSelectedTeamId] = useState(null)
+  const [navigationHistory, setNavigationHistory] = useState(['landing'])
 
   const getBreadcrumbs = () => {
     switch (currentPage) {
@@ -53,8 +55,13 @@ function App() {
       case 'player-stats':
         return [
           { label: 'Dashboard', onClick: () => setCurrentPage('landing') },
-          { label: 'Teams', onClick: () => setCurrentPage('teams') },
+          { label: 'Stats', onClick: () => setCurrentPage('stats') },
           { label: 'Player Stats' }
+        ]
+      case 'match-forecaster':
+        return [
+          { label: 'Dashboard', onClick: () => setCurrentPage('landing') },
+          { label: 'Match Forecaster' }
         ]
       default:
         return [
@@ -90,28 +97,50 @@ function App() {
     setCurrentPage('teams')
   }
 
+  const handleViewTeamStats = (teamId) => {
+    setSelectedTeamId(teamId)
+    setCurrentPage('stats')
+  }
+
   const handleViewPlayerStats = (playerId) => {
-    console.log('handleViewPlayerStats called with playerId:', playerId)
-    setSelectedTeamId(null)
+    // Don't clear selectedTeamId - keep it so we can go back to the same team's stats
     setCurrentPage('player-stats')
     // Store playerId in localStorage for the PlayerStats component to access
     localStorage.setItem('selectedPlayerId', playerId)
-    console.log('Navigation set to player-stats, playerId stored in localStorage')
   }
 
   const handleNavigate = (page) => {
+    setNavigationHistory(prev => [...prev, currentPage])
     setCurrentPage(page)
     if (page !== 'team-overview') {
       setSelectedTeamId(null)
     }
   }
 
+  const navigateTo = (page) => {
+    if (page === currentPage) return;
+    
+    setNavigationHistory(prev => [...prev, currentPage]);
+    setCurrentPage(page);
+  };
+
+  const goBack = () => {
+    if (navigationHistory.length === 0) {
+      navigateTo('landing');
+      return;
+    }
+    
+    const previousPage = navigationHistory[navigationHistory.length - 1];
+    setNavigationHistory(prev => prev.slice(0, -1));
+    setCurrentPage(previousPage);
+  };
+
   const renderPage = () => {
     switch (currentPage) {
       case 'landing':
         return <Landing user={user} onNavigate={handleNavigate} />
       case 'teams':
-        return <Teams user={user} onViewTeam={handleViewTeam} onViewPlayerStats={handleViewPlayerStats} />
+        return <Teams user={user} onViewTeam={handleViewTeam} onViewTeamStats={handleViewTeamStats} onViewPlayerStats={handleViewPlayerStats} />
       case 'team-overview':
         return <TeamOverview user={user} teamId={selectedTeamId} onBack={handleBackToTeams} />
       case 'log-match':
@@ -124,9 +153,11 @@ function App() {
           </div>
         )
       case 'stats':
-        return <Stats user={user} />
+        return <Stats user={user} selectedTeamId={selectedTeamId} onViewPlayerStats={handleViewPlayerStats} />
       case 'player-stats':
-        return <PlayerStats user={user} onNavigate={handleNavigate} />
+        return <PlayerStats user={user} onNavigate={handleNavigate} goBack={goBack} />
+      case 'match-forecaster':
+        return <MatchForecaster user={user} onNavigate={handleNavigate} goBack={goBack} />
       default:
         return <Landing user={user} onNavigate={handleNavigate} />
     }
