@@ -1,12 +1,12 @@
 {
   "Lewis T": {
     "All Seasons": {
-      "goals_scored": 64,
-      "appearances": 39,
-      "avg_team_goals_scored": 4.666666666666667,
-      "avg_team_goals_conceded": 4.589743589743589,
-      "win_rate": 38.46153846153847,
-      "goals_per_game": 1.641025641025641
+      "goals_scored": 67,
+      "appearances": 40,
+      "avg_team_goals_scored": 4.75,
+      "avg_team_goals_conceded": 4.55,
+      "win_rate": 40.0,
+      "goals_per_game": 1.675
     },
     "Prem S1": {
       "goals_scored": 16,
@@ -33,22 +33,22 @@
       "goals_per_game": 1.2727272727272727
     },
     "Prem S4": {
-      "goals_scored": 6,
-      "appearances": 4,
-      "avg_team_goals_scored": 9.0,
-      "avg_team_goals_conceded": 4.25,
-      "win_rate": 25.0,
-      "goals_per_game": 1.5
+      "goals_scored": 9,
+      "appearances": 5,
+      "avg_team_goals_scored": 8.8,
+      "avg_team_goals_conceded": 4.0,
+      "win_rate": 40.0,
+      "goals_per_game": 1.8
     }
   },
   "Sam T": {
     "All Seasons": {
       "goals_scored": 21,
-      "appearances": 39,
-      "avg_team_goals_scored": 4.461538461538462,
-      "avg_team_goals_conceded": 4.769230769230769,
-      "win_rate": 30.76923076923077,
-      "goals_per_game": 0.5384615384615384
+      "appearances": 40,
+      "avg_team_goals_scored": 4.55,
+      "avg_team_goals_conceded": 4.725,
+      "win_rate": 32.5,
+      "goals_per_game": 0.525
     },
     "Prem S1": {
       "goals_scored": 7,
@@ -76,20 +76,20 @@
     },
     "Prem S4": {
       "goals_scored": 0,
-      "appearances": 4,
-      "avg_team_goals_scored": 9.0,
-      "avg_team_goals_conceded": 4.25,
-      "win_rate": 25.0,
+      "appearances": 5,
+      "avg_team_goals_scored": 8.8,
+      "avg_team_goals_conceded": 4.0,
+      "win_rate": 40.0,
       "goals_per_game": 0.0
     }
   },
   "Jack J": {
     "All Seasons": {
       "goals_scored": 0,
-      "appearances": 25,
-      "avg_team_goals_scored": 4.44,
-      "avg_team_goals_conceded": 5.04,
-      "win_rate": 28.000000000000004,
+      "appearances": 26,
+      "avg_team_goals_scored": 4.576923076923077,
+      "avg_team_goals_conceded": 4.961538461538462,
+      "win_rate": 30.76923076923077,
       "goals_per_game": 0.0
     },
     "Prem S1": {
@@ -118,21 +118,21 @@
     },
     "Prem S4": {
       "goals_scored": 0,
-      "appearances": 3,
-      "avg_team_goals_scored": 11.0,
-      "avg_team_goals_conceded": 4.333333333333333,
-      "win_rate": 33.33333333333333,
+      "appearances": 4,
+      "avg_team_goals_scored": 10.25,
+      "avg_team_goals_conceded": 4.0,
+      "win_rate": 50.0,
       "goals_per_game": 0.0
     }
   },
   "Logan": {
     "All Seasons": {
-      "goals_scored": 21,
-      "appearances": 26,
-      "avg_team_goals_scored": 4.730769230769231,
-      "avg_team_goals_conceded": 4.423076923076923,
-      "win_rate": 38.46153846153847,
-      "goals_per_game": 0.8076923076923077
+      "goals_scored": 24,
+      "appearances": 27,
+      "avg_team_goals_scored": 4.851851851851852,
+      "avg_team_goals_conceded": 4.37037037037037,
+      "win_rate": 40.74074074074074,
+      "goals_per_game": 0.8888888888888888
     },
     "Prem S1": {
       "goals_scored": 10,
@@ -159,22 +159,22 @@
       "goals_per_game": 0.6
     },
     "Prem S4": {
-      "goals_scored": 5,
-      "appearances": 4,
-      "avg_team_goals_scored": 9.0,
-      "avg_team_goals_conceded": 4.25,
-      "win_rate": 25.0,
-      "goals_per_game": 1.25
+      "goals_scored": 8,
+      "appearances": 5,
+      "avg_team_goals_scored": 8.8,
+      "avg_team_goals_conceded": 4.0,
+      "win_rate": 40.0,
+      "goals_per_game": 1.6
     }
   },
   "Bruce": {
     "All Seasons": {
-      "goals_scored": 24,
-      "appearances": 35,
-      "avg_team_goals_scored": 4.771428571428571,
-      "avg_team_goals_conceded": 4.6,
-      "win_rate": 37.142857142857146,
-      "goals_per_game": 0.6857142857142857
+      "goals_scored": 25,
+      "appearances": 36,
+      "avg_team_goals_scored": 4.861111111111111,
+      "avg_team_goals_conceded": 4.555555555555555,
+      "win_rate": 38.88888888888889,
+      "goals_per_game": 0.6944444444444444
     },
     "Prem S1": {
       "goals_scored": 10,
@@ -201,22 +201,22 @@
       "goals_per_game": 0.8181818181818182
     },
     "Prem S4": {
-      "goals_scored": 2,
-      "appearances": 4,
-      "avg_team_goals_scored": 9.0,
-      "avg_team_goals_conceded": 4.25,
-      "win_rate": 25.0,
-      "goals_per_game": 0.5
+      "goals_scored": 3,
+      "appearances": 5,
+      "avg_team_goals_scored": 8.8,
+      "avg_team_goals_conceded": 4.0,
+      "win_rate": 40.0,
+      "goals_per_game": 0.6
     }
   },
   "Jake H": {
     "All Seasons": {
       "goals_scored": 16,
-      "appearances": 32,
-      "avg_team_goals_scored": 4.3125,
-      "avg_team_goals_conceded": 4.75,
-      "win_rate": 34.375,
-      "goals_per_game": 0.5
+      "appearances": 33,
+      "avg_team_goals_scored": 4.424242424242424,
+      "avg_team_goals_conceded": 4.696969696969697,
+      "win_rate": 36.36363636363637,
+      "goals_per_game": 0.48484848484848486
     },
     "Prem S1": {
       "goals_scored": 5,
@@ -244,11 +244,11 @@
     },
     "Prem S4": {
       "goals_scored": 1,
-      "appearances": 2,
-      "avg_team_goals_scored": 14.5,
-      "avg_team_goals_conceded": 3.5,
-      "win_rate": 50.0,
-      "goals_per_game": 0.5
+      "appearances": 3,
+      "avg_team_goals_scored": 12.333333333333334,
+      "avg_team_goals_conceded": 3.3333333333333335,
+      "win_rate": 66.66666666666666,
+      "goals_per_game": 0.3333333333333333
     }
   },
   "Sam M": {
@@ -295,12 +295,12 @@
   },
   "Ash": {
     "All Seasons": {
-      "goals_scored": 15,
-      "appearances": 24,
-      "avg_team_goals_scored": 4.791666666666667,
-      "avg_team_goals_conceded": 4.208333333333333,
-      "win_rate": 41.66666666666667,
-      "goals_per_game": 0.625
+      "goals_scored": 16,
+      "appearances": 25,
+      "avg_team_goals_scored": 4.92,
+      "avg_team_goals_conceded": 4.16,
+      "win_rate": 44.0,
+      "goals_per_game": 0.64
     },
     "Prem S1": {
       "goals_scored": 4,
@@ -327,11 +327,11 @@
       "goals_per_game": 0.5
     },
     "Prem S4": {
-      "goals_scored": 3,
-      "appearances": 3,
-      "avg_team_goals_scored": 10.333333333333334,
-      "avg_team_goals_conceded": 4.0,
-      "win_rate": 33.33333333333333,
+      "goals_scored": 4,
+      "appearances": 4,
+      "avg_team_goals_scored": 9.75,
+      "avg_team_goals_conceded": 3.75,
+      "win_rate": 50.0,
       "goals_per_game": 1.0
     }
   },
