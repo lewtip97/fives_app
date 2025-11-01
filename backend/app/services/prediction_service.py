@@ -12,7 +12,8 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 class PredictionService:
     def __init__(self):
-        self.models_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'models')
+        # Go up from services/app/backend to project root, then access models directory
+        self.models_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), 'models')
         self.player_models = {}
         self.goals_against_model = None
         self._load_models()
@@ -23,8 +24,12 @@ class PredictionService:
             # Load goals against model
             goals_against_path = os.path.join(self.models_dir, 'goals_against_model.joblib')
             if os.path.exists(goals_against_path):
-                self.goals_against_model = joblib.load(goals_against_path)
-                print(f"Loaded goals against model")
+                try:
+                    self.goals_against_model = joblib.load(goals_against_path)
+                    print(f"Loaded goals against model")
+                except Exception as e:
+                    print(f"Failed to load goals against model: {e}")
+                    self.goals_against_model = None
             
             # Load individual player models
             for filename in os.listdir(self.models_dir):
@@ -36,9 +41,13 @@ class PredictionService:
                         print(f"Loaded model for {player_name}")
                     except Exception as e:
                         print(f"Failed to load model for {player_name}: {e}")
+                        # Continue loading other models even if one fails
                         
         except Exception as e:
             print(f"Error loading models: {e}")
+            # Set defaults so the service can still function
+            self.goals_against_model = None
+            self.player_models = {}
     
     def predict_match_outcome(self, team_id: str, opponent_id: str, selected_players: List[str]) -> Dict[str, Any]:
         """
