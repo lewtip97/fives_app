@@ -33,7 +33,7 @@ function Layout({ user, children, onLogout, breadcrumbs = [] }) {
             fontFamily: theme.typography.fontFamily,
             margin: 0,
             letterSpacing: theme.typography.letterSpacing.tight,
-            background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+            background: 'linear-gradient(135deg, #FFD700 0%, #FFEB3B 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
@@ -68,7 +68,7 @@ function Layout({ user, children, onLogout, breadcrumbs = [] }) {
                     onClick={crumb.onClick}
                     onMouseEnter={crumb.onClick ? (e) => {
                       e.target.style.color = theme.colors.primary;
-                      e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                      e.target.style.background = 'rgba(255, 215, 0, 0.1)';
                     } : undefined}
                     onMouseLeave={crumb.onClick ? (e) => {
                       e.target.style.color = index === breadcrumbs.length - 1 ? theme.colors.textPrimary : theme.colors.textSecondary;
@@ -119,16 +119,16 @@ function Layout({ user, children, onLogout, breadcrumbs = [] }) {
               width: '44px',
               height: '44px',
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-              color: '#FFFFFF',
+              background: 'linear-gradient(135deg, #FFD700 0%, #FFEB3B 100%)',
+              color: '#000000',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: theme.typography.fontWeights.bold,
               fontSize: '18px',
               fontFamily: theme.typography.fontFamily,
-              boxShadow: '0 4px 12px rgba(0, 122, 255, 0.3)',
-              border: '2px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 4px 12px rgba(255, 215, 0, 0.4)',
+              border: '2px solid rgba(255, 215, 0, 0.5)',
             }}
           >
             {user.email.charAt(0).toUpperCase()}
@@ -139,10 +139,10 @@ function Layout({ user, children, onLogout, breadcrumbs = [] }) {
             fontSize: '15px',
             fontFamily: theme.typography.fontFamily,
           }} onMouseEnter={(e) => {
-            e.target.style.background = 'rgba(255, 255, 255, 0.2)'
+            e.target.style.background = 'rgba(255, 215, 0, 0.2)'
             e.target.style.transform = 'translateY(-1px)'
           }} onMouseLeave={(e) => {
-            e.target.style.background = 'rgba(255, 255, 255, 0.1)'
+            e.target.style.background = 'rgba(255, 215, 0, 0.1)'
             e.target.style.transform = 'translateY(0)'
           }}>
             Log out

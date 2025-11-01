@@ -1,72 +1,73 @@
-// Apple Glass / Glassmorphism Theme
+// Apple Glass / Glassmorphism Theme - Dark Mode with Yellow Accent
 const theme = {
   colors: {
-    // Primary colors - Modern, soft blues/purples
-    primary: '#007AFF', // Apple blue
-    primaryHover: '#0051D5',
-    primaryLight: '#5AC8FA',
-    primaryText: '#FFFFFF',
+    // Primary colors - Yellow theme
+    primary: '#FFD700', // Gold/Yellow
+    primaryHover: '#FFC700',
+    primaryLight: '#FFEB3B',
+    primaryText: '#000000',
     
-    // Background colors - Soft gradients
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
-    backgroundAlt: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-    backgroundDark: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+    // Background colors - Dark gradients
+    background: 'linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%)',
+    backgroundAlt: 'linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%)',
+    backgroundDark: 'linear-gradient(135deg, #000000 0%, #1a1a2e 100%)',
     
-    // Glass morphism elements
-    glass: 'rgba(255, 255, 255, 0.1)',
-    glassDark: 'rgba(0, 0, 0, 0.2)',
-    glassLight: 'rgba(255, 255, 255, 0.2)',
-    glassBorder: 'rgba(255, 255, 255, 0.18)',
+    // Glass morphism elements - Dark mode
+    glass: 'rgba(0, 0, 0, 0.3)',
+    glassDark: 'rgba(0, 0, 0, 0.4)',
+    glassLight: 'rgba(255, 255, 255, 0.05)',
+    glassBorder: 'rgba(255, 215, 0, 0.2)',
     
-    // Text colors - High contrast for readability
-    textPrimary: '#1d1d1f',
-    textSecondary: '#6e6e73',
-    textMuted: '#86868b',
-    textLight: '#ffffff',
+    // Text colors - Light text for dark mode
+    textPrimary: '#FFFFFF',
+    textSecondary: '#CCCCCC',
+    textMuted: '#999999',
+    textLight: '#FFFFFF',
     
-    // Border colors - Subtle and elegant
-    border: 'rgba(255, 255, 255, 0.18)',
-    borderLight: 'rgba(255, 255, 255, 0.1)',
-    borderDark: 'rgba(0, 0, 0, 0.1)',
+    // Border colors - Yellow tinted
+    border: 'rgba(255, 215, 0, 0.25)',
+    borderLight: 'rgba(255, 215, 0, 0.15)',
+    borderDark: 'rgba(0, 0, 0, 0.5)',
     
-    // Status colors - Apple-inspired
-    error: '#FF3B30',
-    success: '#34C759',
-    warning: '#FF9500',
-    info: '#5AC8FA',
+    // Status colors - Yellow theme with variations
+    error: '#FF6B6B',
+    success: '#4ECDC4',
+    warning: '#FFD700',
+    info: '#4A90E2',
     
-    // Shadows - Soft, layered
-    shadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
-    shadowLight: '0 4px 16px 0 rgba(31, 38, 135, 0.2)',
-    shadowHeavy: '0 20px 60px 0 rgba(31, 38, 135, 0.5)',
-    shadowInset: 'inset 0 2px 4px 0 rgba(255, 255, 255, 0.1)',
+    // Shadows - Dark mode with yellow glow
+    shadow: '0 8px 32px 0 rgba(0, 0, 0, 0.5)',
+    shadowLight: '0 4px 16px 0 rgba(0, 0, 0, 0.3)',
+    shadowHeavy: '0 20px 60px 0 rgba(255, 215, 0, 0.2)',
+    shadowInset: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.3)',
+    shadowYellow: '0 8px 32px 0 rgba(255, 215, 0, 0.25)',
   },
   
-  // Supabase Auth UI theme - Glass style
+  // Supabase Auth UI theme - Dark mode with yellow
   authTheme: {
     theme: 'ThemeSupa',
     variables: {
       default: {
         colors: {
-          brand: '#007AFF',
-          brandAccent: '#5AC8FA',
-          brandButtonText: '#FFFFFF',
-          defaultButtonBackground: 'rgba(255, 255, 255, 0.1)',
-          defaultButtonBackgroundHover: 'rgba(255, 255, 255, 0.2)',
-          defaultButtonBorder: 'rgba(255, 255, 255, 0.18)',
-          defaultButtonText: '#1d1d1f',
-          dividerBackground: 'rgba(255, 255, 255, 0.1)',
-          inputBackground: 'rgba(255, 255, 255, 0.1)',
-          inputBorder: 'rgba(255, 255, 255, 0.18)',
-          inputBorderHover: 'rgba(255, 255, 255, 0.3)',
-          inputBorderFocus: '#007AFF',
-          inputText: '#1d1d1f',
-          inputLabelText: '#6e6e73',
-          inputPlaceholder: '#86868b',
-          messageText: '#1d1d1f',
-          messageTextDanger: '#FF3B30',
-          anchorTextColor: '#007AFF',
-          anchorTextHoverColor: '#5AC8FA',
+          brand: '#FFD700',
+          brandAccent: '#FFEB3B',
+          brandButtonText: '#000000',
+          defaultButtonBackground: 'rgba(255, 215, 0, 0.1)',
+          defaultButtonBackgroundHover: 'rgba(255, 215, 0, 0.2)',
+          defaultButtonBorder: 'rgba(255, 215, 0, 0.3)',
+          defaultButtonText: '#FFFFFF',
+          dividerBackground: 'rgba(255, 215, 0, 0.2)',
+          inputBackground: 'rgba(0, 0, 0, 0.3)',
+          inputBorder: 'rgba(255, 215, 0, 0.25)',
+          inputBorderHover: 'rgba(255, 215, 0, 0.4)',
+          inputBorderFocus: '#FFD700',
+          inputText: '#FFFFFF',
+          inputLabelText: '#CCCCCC',
+          inputPlaceholder: '#999999',
+          messageText: '#FFFFFF',
+          messageTextDanger: '#FF6B6B',
+          anchorTextColor: '#FFD700',
+          anchorTextHoverColor: '#FFEB3B',
         },
         space: {
           inputPadding: '14px',
@@ -112,52 +113,53 @@ const theme = {
     },
   },
   
-  // Common styles - Glass morphism
+  // Common styles - Glass morphism (Dark mode)
   styles: {
     glassCard: {
-      background: 'rgba(255, 255, 255, 0.1)',
+      background: 'rgba(0, 0, 0, 0.3)',
       backdropFilter: 'blur(20px) saturate(180%)',
       WebkitBackdropFilter: 'blur(20px) saturate(180%)',
       borderRadius: 20,
-      border: '1px solid rgba(255, 255, 255, 0.18)',
-      boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
+      border: '1px solid rgba(255, 215, 0, 0.2)',
+      boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.5)',
       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     },
     
     glassCardHover: {
       transform: 'translateY(-4px)',
-      boxShadow: '0 12px 40px 0 rgba(31, 38, 135, 0.5)',
-      background: 'rgba(255, 255, 255, 0.15)',
+      boxShadow: '0 12px 40px 0 rgba(255, 215, 0, 0.3)',
+      background: 'rgba(255, 215, 0, 0.1)',
+      border: '1px solid rgba(255, 215, 0, 0.4)',
     },
     
     card: {
-      background: 'rgba(255, 255, 255, 0.1)',
+      background: 'rgba(0, 0, 0, 0.3)',
       backdropFilter: 'blur(20px) saturate(180%)',
       WebkitBackdropFilter: 'blur(20px) saturate(180%)',
       borderRadius: 20,
-      boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
-      border: '1px solid rgba(255, 255, 255, 0.18)',
+      boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.5)',
+      border: '1px solid rgba(255, 215, 0, 0.2)',
     },
     
     button: {
       primary: {
-        background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
-        color: '#FFFFFF',
+        background: 'linear-gradient(135deg, #FFD700 0%, #FFEB3B 100%)',
+        color: '#000000',
         border: 'none',
         borderRadius: 12,
         padding: '14px 28px',
         fontWeight: 600,
         cursor: 'pointer',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        boxShadow: '0 4px 16px rgba(0, 122, 255, 0.3)',
+        boxShadow: '0 4px 16px rgba(255, 215, 0, 0.4)',
       },
       
       secondary: {
-        background: 'rgba(255, 255, 255, 0.1)',
+        background: 'rgba(255, 215, 0, 0.1)',
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
-        color: '#1d1d1f',
-        border: '1px solid rgba(255, 255, 255, 0.18)',
+        color: '#FFFFFF',
+        border: '1px solid rgba(255, 215, 0, 0.3)',
         borderRadius: 12,
         padding: '14px 28px',
         fontWeight: 600,
@@ -167,37 +169,37 @@ const theme = {
     },
     
     input: {
-      background: 'rgba(255, 255, 255, 0.1)',
+      background: 'rgba(0, 0, 0, 0.3)',
       backdropFilter: 'blur(10px)',
       WebkitBackdropFilter: 'blur(10px)',
-      border: '1px solid rgba(255, 255, 255, 0.18)',
+      border: '1px solid rgba(255, 215, 0, 0.25)',
       borderRadius: 12,
-      color: '#1d1d1f',
+      color: '#FFFFFF',
       padding: '14px 16px',
       fontSize: '16px',
       transition: 'all 0.3s ease',
     },
   },
   
-  // Glass effect utilities
+  // Glass effect utilities (Dark mode)
   glass: {
     light: {
-      background: 'rgba(255, 255, 255, 0.1)',
+      background: 'rgba(0, 0, 0, 0.2)',
       backdropFilter: 'blur(20px) saturate(180%)',
       WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-      border: '1px solid rgba(255, 255, 255, 0.18)',
+      border: '1px solid rgba(255, 215, 0, 0.15)',
     },
     medium: {
-      background: 'rgba(255, 255, 255, 0.15)',
+      background: 'rgba(0, 0, 0, 0.35)',
       backdropFilter: 'blur(25px) saturate(180%)',
       WebkitBackdropFilter: 'blur(25px) saturate(180%)',
-      border: '1px solid rgba(255, 255, 255, 0.25)',
+      border: '1px solid rgba(255, 215, 0, 0.25)',
     },
     heavy: {
-      background: 'rgba(255, 255, 255, 0.2)',
+      background: 'rgba(0, 0, 0, 0.5)',
       backdropFilter: 'blur(30px) saturate(180%)',
       WebkitBackdropFilter: 'blur(30px) saturate(180%)',
-      border: '1px solid rgba(255, 255, 255, 0.3)',
+      border: '1px solid rgba(255, 215, 0, 0.35)',
     },
   },
 }

@@ -193,7 +193,7 @@ function App() {
             fontFamily: theme.typography.fontFamily,
             fontWeight: theme.typography.fontWeights.bold,
             letterSpacing: theme.typography.letterSpacing.tight,
-            background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+            background: 'linear-gradient(135deg, #FFD700 0%, #FFEB3B 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',

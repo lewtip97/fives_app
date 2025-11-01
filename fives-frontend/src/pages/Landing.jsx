@@ -46,25 +46,25 @@ function Landing({ user, onNavigate }) {
       title: "Manage Teams",
       description: "Create teams, add players, and organize your squad",
       action: () => onNavigate('teams'),
-      color: theme.colors.primary,
+      color: theme.colors.primary, // Yellow/Gold
     },
     {
       title: "Log Match Result",
       description: "Record game scores, player performances, and track stats",
       action: () => onNavigate('log-match'),
-      color: theme.colors.error,
+      color: '#FFB800', // Darker yellow
     },
     {
       title: "View Statistics",
       description: "Analyze team performance, player stats, and trends",
       action: () => onNavigate('stats'),
-      color: theme.colors.warning,
+      color: theme.colors.warning, // Gold
     },
     {
       title: "Match Forecaster",
       description: "Predict match outcomes and player performance",
       action: () => onNavigate('match-forecaster'),
-      color: theme.colors.info || '#6366f1',
+      color: '#FFE135', // Bright yellow
     },
   ])
 
@@ -82,7 +82,7 @@ function Landing({ user, onNavigate }) {
           fontFamily: theme.typography.fontFamily,
           letterSpacing: theme.typography.letterSpacing.tight,
           marginBottom: 20,
-          background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+          background: 'linear-gradient(135deg, #FFD700 0%, #FFEB3B 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
@@ -124,12 +124,14 @@ function Landing({ user, onNavigate }) {
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-8px) scale(1.02)'
               e.currentTarget.style.boxShadow = theme.colors.shadowHeavy
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'
+              e.currentTarget.style.background = 'rgba(255, 215, 0, 0.15)'
+              e.currentTarget.style.border = '1px solid rgba(255, 215, 0, 0.4)'
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = 'translateY(0) scale(1)'
               e.currentTarget.style.boxShadow = theme.colors.shadow
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+              e.currentTarget.style.background = 'rgba(0, 0, 0, 0.3)'
+              e.currentTarget.style.border = '1px solid rgba(255, 215, 0, 0.2)'
             }}
           >
             <div style={{
@@ -138,7 +140,7 @@ function Landing({ user, onNavigate }) {
               alignItems: 'center',
               textAlign: 'center',
             }}>
-              {/* Logo */}
+              {/* Simple Icon */}
               <div style={{
                 width: 72,
                 height: 72,
@@ -149,38 +151,15 @@ function Landing({ user, onNavigate }) {
                 justifyContent: 'center',
                 marginBottom: 24,
                 boxShadow: `0 8px 24px ${action.color}40`,
-                border: '2px solid rgba(255, 255, 255, 0.3)',
+                border: '2px solid rgba(255, 215, 0, 0.4)',
+                fontSize: '32px',
+                fontWeight: 'bold',
+                color: '#000000',
               }}>
-                {action.title === "Manage Teams" && (
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                  </svg>
-                )}
-                {action.title === "Log Match Result" && (
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-                    <line x1="9" y1="9" x2="9.01" y2="9"/>
-                    <line x1="15" y1="9" x2="15.01" y2="9"/>
-                  </svg>
-                )}
-                {action.title === "View Statistics" && (
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <path d="M18 20V10"/>
-                    <path d="M12 20V4"/>
-                    <path d="M6 20v-6"/>
-                  </svg>
-                )}
-                {action.title === "Match Forecaster" && (
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 17v.01"/>
-                  </svg>
-                )}
+                {action.title === "Manage Teams" && '⚙'}
+                {action.title === "Log Match Result" && '●'}
+                {action.title === "View Statistics" && '■'}
+                {action.title === "Match Forecaster" && '◆'}
               </div>
               
               <h3 style={{
@@ -218,7 +197,7 @@ function Landing({ user, onNavigate }) {
           color: theme.colors.textPrimary,
           fontFamily: theme.typography.fontFamily,
           marginBottom: 28,
-          background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+          background: 'linear-gradient(135deg, #FFD700 0%, #FFEB3B 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
@@ -248,12 +227,14 @@ function Landing({ user, onNavigate }) {
                 transition: 'all 0.3s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'
+                e.currentTarget.style.background = 'rgba(255, 215, 0, 0.1)'
                 e.currentTarget.style.transform = 'translateX(4px)'
+                e.currentTarget.style.border = '1px solid rgba(255, 215, 0, 0.3)'
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+                e.currentTarget.style.background = 'rgba(0, 0, 0, 0.2)'
                 e.currentTarget.style.transform = 'translateX(0)'
+                e.currentTarget.style.border = '1px solid rgba(255, 215, 0, 0.15)'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <div style={{

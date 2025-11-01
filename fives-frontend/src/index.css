@@ -3,19 +3,19 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light;
-  color: #1d1d1f;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  color-scheme: dark;
+  color: #FFFFFF;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   
-  /* Glass morphism variables */
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.18);
-  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  /* Glass morphism variables - Dark mode */
+  --glass-bg: rgba(0, 0, 0, 0.3);
+  --glass-border: rgba(255, 215, 0, 0.2);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
 }
 
 * {
@@ -28,7 +28,7 @@ html, body, #root {
   height: 100%;
   width: 100%;
   overflow-x: hidden;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
   background-attachment: fixed;
 }
 
@@ -46,12 +46,12 @@ html {
 
 a {
   font-weight: 500;
-  color: #007AFF;
+  color: #FFD700;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 a:hover {
-  color: #5AC8FA;
+  color: #FFEB3B;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -60,13 +60,13 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
 }
 
-/* Glass morphism utility classes */
+/* Glass morphism utility classes - Dark mode */
 .glass {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
 }
 
 .glass-light {
@@ -96,7 +96,7 @@ button, a, .glass {
 button:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 2px solid #007AFF;
+  outline: 2px solid #FFD700;
   outline-offset: 2px;
 }
 
