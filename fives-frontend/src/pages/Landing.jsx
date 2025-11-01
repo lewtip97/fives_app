@@ -69,32 +69,35 @@ function Landing({ user, onNavigate }) {
   ])
 
   return (
-    <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+    <div style={{ maxWidth: 1200, margin: '0 auto', animation: 'fadeIn 0.6s ease-out' }}>
       {/* Hero Section */}
       <div style={{
         textAlign: 'center',
-        padding: '60px 20px',
+        padding: '40px 20px',
         marginBottom: 48,
       }}>
         <h1 style={{
-          fontSize: '48px',
+          fontSize: '56px',
           fontWeight: theme.typography.fontWeights.bold,
-          color: theme.colors.primary,
           fontFamily: theme.typography.fontFamily,
           letterSpacing: theme.typography.letterSpacing.tight,
-          marginBottom: 16,
-          textShadow: '0 4px 8px rgba(0,0,0,0.1)',
+          marginBottom: 20,
+          background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
         }}>
           Welcome to Fives App
         </h1>
         <p style={{
-          fontSize: '20px',
-          color: theme.colors.textSecondary,
+          fontSize: '22px',
+          color: theme.colors.textPrimary,
           fontFamily: theme.typography.fontFamily,
           fontWeight: theme.typography.fontWeights.normal,
-          maxWidth: 600,
+          maxWidth: 700,
           margin: '0 auto',
           lineHeight: 1.6,
+          opacity: 0.9,
         }}>
           The ultimate platform for managing your 5-a-side football team, tracking performance, and analyzing stats.
         </p>
@@ -114,21 +117,19 @@ function Landing({ user, onNavigate }) {
             key={index}
             onClick={action.action}
             style={{
-              background: theme.colors.card,
+              ...theme.styles.glassCard,
               padding: 32,
-              borderRadius: 16,
-              border: `1px solid ${theme.colors.border}`,
               cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              boxShadow: theme.colors.shadowLight,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.transform = 'translateY(-4px)'
-              e.currentTarget.style.boxShadow = theme.colors.shadow
+              e.currentTarget.style.transform = 'translateY(-8px) scale(1.02)'
+              e.currentTarget.style.boxShadow = theme.colors.shadowHeavy
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = theme.colors.shadowLight
+              e.currentTarget.style.transform = 'translateY(0) scale(1)'
+              e.currentTarget.style.boxShadow = theme.colors.shadow
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
             }}
           >
             <div style={{
@@ -139,15 +140,16 @@ function Landing({ user, onNavigate }) {
             }}>
               {/* Logo */}
               <div style={{
-                width: 64,
-                height: 64,
+                width: 72,
+                height: 72,
                 borderRadius: '50%',
-                background: action.color,
+                background: `linear-gradient(135deg, ${action.color} 0%, ${action.color}dd 100%)`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginBottom: 20,
-                boxShadow: theme.colors.shadowLight,
+                marginBottom: 24,
+                boxShadow: `0 8px 24px ${action.color}40`,
+                border: '2px solid rgba(255, 255, 255, 0.3)',
               }}>
                 {action.title === "Manage Teams" && (
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
@@ -181,8 +183,8 @@ function Landing({ user, onNavigate }) {
                 )}
               </div>
               
-                            <h3 style={{
-                fontSize: '24px',
+              <h3 style={{
+                fontSize: '22px',
                 fontWeight: theme.typography.fontWeights.bold,
                 color: theme.colors.textPrimary,
                 fontFamily: theme.typography.fontFamily,
@@ -191,10 +193,11 @@ function Landing({ user, onNavigate }) {
                 {action.title}
               </h3>
               <p style={{
-                fontSize: '16px',
+                fontSize: '15px',
                 color: theme.colors.textSecondary,
                 fontFamily: theme.typography.fontFamily,
-                lineHeight: 1.5,
+                lineHeight: 1.6,
+                opacity: 0.9,
               }}>
                 {action.description}
               </p>
@@ -205,16 +208,20 @@ function Landing({ user, onNavigate }) {
 
       {/* Recent Activity Section */}
       <div style={{
-        ...theme.styles.card,
-        padding: 32,
+        ...theme.styles.glassCard,
+        padding: 40,
         marginBottom: 32,
       }}>
         <h2 style={{
-          fontSize: '28px',
+          fontSize: '32px',
           fontWeight: theme.typography.fontWeights.bold,
           color: theme.colors.textPrimary,
           fontFamily: theme.typography.fontFamily,
-          marginBottom: 24,
+          marginBottom: 28,
+          background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
         }}>
           Recent Activity
         </h2>
@@ -235,23 +242,33 @@ function Landing({ user, onNavigate }) {
           ) : activities.length > 0 ? (
             activities.map((activity) => (
               <div key={activity.id} style={{
+                ...theme.glass.light,
                 padding: 20,
-                background: theme.colors.content,
-                borderRadius: 8,
-                border: `1px solid ${theme.colors.border}`,
+                borderRadius: 16,
+                transition: 'all 0.3s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'
+                e.currentTarget.style.transform = 'translateX(4px)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'
+                e.currentTarget.style.transform = 'translateX(0)'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <div style={{
-                    width: 40,
-                    height: 40,
-                    background: getActivityColor(activity.type, activity.color),
+                    width: 48,
+                    height: 48,
+                    background: `linear-gradient(135deg, ${getActivityColor(activity.type, activity.color)} 0%, ${getActivityColor(activity.type, activity.color)}dd 100%)`,
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: 'white',
-                    fontSize: '18px',
+                    fontSize: '20px',
                     fontWeight: theme.typography.fontWeights.bold,
+                    boxShadow: `0 4px 12px ${getActivityColor(activity.type, activity.color)}40`,
+                    border: '2px solid rgba(255, 255, 255, 0.3)',
                   }}>
                     {activity.icon}
                   </div>

@@ -174,25 +174,31 @@ function App() {
           alignItems: 'center',
           justifyContent: 'center',
           padding: '20px',
+          position: 'relative',
         }}
       >
         <div
           style={{
-            ...theme.styles.card,
-            padding: 40,
-            maxWidth: 400,
+            ...theme.styles.glassCard,
+            padding: '48px',
+            maxWidth: 440,
             width: '100%',
+            animation: 'fadeIn 0.5s ease-out',
           }}
         >
           <h2 style={{ 
             textAlign: 'center', 
-            marginBottom: 24, 
-            color: theme.colors.primary,
+            marginBottom: 32, 
+            fontSize: '28px',
             fontFamily: theme.typography.fontFamily,
             fontWeight: theme.typography.fontWeights.bold,
             letterSpacing: theme.typography.letterSpacing.tight,
+            background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
           }}>
-            Fives App Login
+            Welcome to Fives App
           </h2>
           <Auth 
             supabaseClient={supabase} 

@@ -3,27 +3,40 @@ import { theme } from '../theme'
 
 function Layout({ user, children, onLogout, breadcrumbs = [] }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', background: theme.colors.background }}>
-      {/* Header */}
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      height: '100vh', 
+      width: '100vw',
+      position: 'relative',
+    }}>
+      {/* Header - Glass morphism */}
       <header style={{
-        background: theme.colors.header,
-        borderBottom: `1px solid ${theme.colors.border}`,
-        padding: '16px 32px',
+        ...theme.glass.medium,
+        padding: '20px 32px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         minHeight: '80px',
         boxShadow: theme.colors.shadowLight,
+        position: 'sticky',
+        top: 0,
+        zIndex: 1000,
+        borderBottom: `1px solid ${theme.colors.glassBorder}`,
       }}>
         {/* Breadcrumbs */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <h1 style={{
-            fontSize: '24px',
+            fontSize: '26px',
             fontWeight: theme.typography.fontWeights.bold,
-            color: theme.colors.primary,
+            color: theme.colors.textPrimary,
             fontFamily: theme.typography.fontFamily,
             margin: 0,
             letterSpacing: theme.typography.letterSpacing.tight,
+            background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
           }}>
             Fives App
           </h1>
@@ -32,8 +45,9 @@ function Layout({ user, children, onLogout, breadcrumbs = [] }) {
             <>
               <span style={{
                 color: theme.colors.textMuted,
-                fontSize: '18px',
-                margin: '0 8px',
+                fontSize: '16px',
+                margin: '0 4px',
+                opacity: 0.5,
               }}>
                 ›
               </span>
@@ -43,15 +57,23 @@ function Layout({ user, children, onLogout, breadcrumbs = [] }) {
                   <div key={index} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{
                       color: index === breadcrumbs.length - 1 ? theme.colors.textPrimary : theme.colors.textSecondary,
-                      fontSize: '16px',
+                      fontSize: '15px',
                       fontWeight: index === breadcrumbs.length - 1 ? theme.typography.fontWeights.semibold : theme.typography.fontWeights.normal,
                       fontFamily: theme.typography.fontFamily,
                       cursor: crumb.onClick ? 'pointer' : 'default',
-                      transition: 'color 0.2s ease',
+                      transition: 'all 0.2s ease',
+                      padding: '4px 8px',
+                      borderRadius: 8,
                     }} 
                     onClick={crumb.onClick}
-                    onMouseEnter={crumb.onClick ? (e) => e.target.style.color = theme.colors.primary : undefined}
-                    onMouseLeave={crumb.onClick ? (e) => e.target.style.color = index === breadcrumbs.length - 1 ? theme.colors.textPrimary : theme.colors.textSecondary : undefined}
+                    onMouseEnter={crumb.onClick ? (e) => {
+                      e.target.style.color = theme.colors.primary;
+                      e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                    } : undefined}
+                    onMouseLeave={crumb.onClick ? (e) => {
+                      e.target.style.color = index === breadcrumbs.length - 1 ? theme.colors.textPrimary : theme.colors.textSecondary;
+                      e.target.style.background = 'transparent';
+                    } : undefined}
                     >
                       {crumb.label}
                     </span>
@@ -59,6 +81,7 @@ function Layout({ user, children, onLogout, breadcrumbs = [] }) {
                       <span style={{
                         color: theme.colors.textMuted,
                         fontSize: '14px',
+                        opacity: 0.5,
                       }}>
                         ›
                       </span>
@@ -74,15 +97,16 @@ function Layout({ user, children, onLogout, breadcrumbs = [] }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <div style={{ textAlign: 'right' }}>
             <div style={{ 
-              fontSize: '14px', 
-              color: theme.colors.textSecondary,
+              fontSize: '13px', 
+              color: theme.colors.textMuted,
               fontFamily: theme.typography.fontFamily,
               fontWeight: theme.typography.fontWeights.normal,
+              opacity: 0.8,
             }}>
-              Account
+              Signed in as
             </div>
             <div style={{ 
-              fontSize: '16px', 
+              fontSize: '15px', 
               fontWeight: theme.typography.fontWeights.semibold, 
               color: theme.colors.textPrimary,
               fontFamily: theme.typography.fontFamily,
@@ -92,37 +116,34 @@ function Layout({ user, children, onLogout, breadcrumbs = [] }) {
           </div>
           <div
             style={{
-              width: '40px',
-              height: '40px',
+              width: '44px',
+              height: '44px',
               borderRadius: '50%',
-              background: theme.colors.primary,
-              color: theme.colors.primaryText,
+              background: 'linear-gradient(135deg, #007AFF 0%, #5AC8FA 100%)',
+              color: '#FFFFFF',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: theme.typography.fontWeights.bold,
-              fontSize: '16px',
+              fontSize: '18px',
               fontFamily: theme.typography.fontFamily,
+              boxShadow: '0 4px 12px rgba(0, 122, 255, 0.3)',
+              border: '2px solid rgba(255, 255, 255, 0.2)',
             }}
           >
             {user.email.charAt(0).toUpperCase()}
           </div>
           <button onClick={onLogout} style={{
-            background: 'none',
-            border: `1px solid ${theme.colors.border}`,
-            color: theme.colors.textSecondary,
-            padding: '8px 16px',
-            borderRadius: 6,
-            cursor: 'pointer',
-            fontSize: '14px',
+            ...theme.styles.button.secondary,
+            padding: '10px 20px',
+            fontSize: '15px',
             fontFamily: theme.typography.fontFamily,
-            transition: 'all 0.2s ease',
           }} onMouseEnter={(e) => {
-            e.target.style.background = theme.colors.border
-            e.target.style.color = theme.colors.textPrimary
+            e.target.style.background = 'rgba(255, 255, 255, 0.2)'
+            e.target.style.transform = 'translateY(-1px)'
           }} onMouseLeave={(e) => {
-            e.target.style.background = 'none'
-            e.target.style.color = theme.colors.textSecondary
+            e.target.style.background = 'rgba(255, 255, 255, 0.1)'
+            e.target.style.transform = 'translateY(0)'
           }}>
             Log out
           </button>
@@ -130,8 +151,20 @@ function Layout({ user, children, onLogout, breadcrumbs = [] }) {
       </header>
 
       {/* Main Content */}
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        <div style={{ flex: 1, padding: '32px', overflow: 'auto', background: theme.colors.content }}>
+      <main style={{ 
+        flex: 1, 
+        display: 'flex', 
+        flexDirection: 'column', 
+        overflow: 'hidden',
+        position: 'relative',
+      }}>
+        <div style={{ 
+          flex: 1, 
+          padding: '32px', 
+          overflow: 'auto',
+          position: 'relative',
+          zIndex: 1,
+        }}>
           {children}
         </div>
       </main>
