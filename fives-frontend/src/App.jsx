@@ -1,0 +1,229 @@
+import { useEffect, useState } from 'react'
+import { Auth } from '@supabase/auth-ui-react'
+import { ThemeSupa } from '@supabase/auth-ui-shared'
+import { supabase } from './supabaseClient'
+import Layout from './components/Layout'
+import Teams from './pages/Teams'
+import TeamOverview from './pages/TeamOverview'
+import Landing from './pages/Landing'
+import LogMatch from './pages/LogMatch'
+import Stats from './pages/Stats'
+import PlayerStats from './pages/PlayerStats'
+import MatchForecaster from './pages/MatchForecaster'
+import { MatchCacheProvider } from './contexts/MatchCacheContext'
+import { theme } from './theme'
+import './App.css'
+
+function App() {
+  const [user, setUser] = useState(null)
+  const [currentPage, setCurrentPage] = useState('landing')
+  const [selectedTeamId, setSelectedTeamId] = useState(null)
+  const [navigationHistory, setNavigationHistory] = useState(['landing'])
+
+  const getBreadcrumbs = () => {
+    switch (currentPage) {
+      case 'landing':
+        return [
+          { label: 'Dashboard' }
+        ]
+      case 'teams':
+        return [
+          { label: 'Dashboard', onClick: () => setCurrentPage('landing') },
+          { label: 'Teams' }
+        ]
+      case 'team-overview':
+        return [
+          { label: 'Dashboard', onClick: () => setCurrentPage('landing') },
+          { label: 'Teams', onClick: () => setCurrentPage('teams') },
+          { label: 'Team Details' }
+        ]
+      case 'log-match':
+        return [
+          { label: 'Dashboard', onClick: () => setCurrentPage('landing') },
+          { label: 'Log Match' }
+        ]
+      case 'players':
+        return [
+          { label: 'Dashboard', onClick: () => setCurrentPage('landing') },
+          { label: 'Players' }
+        ]
+      case 'stats':
+        return [
+          { label: 'Dashboard', onClick: () => setCurrentPage('landing') },
+          { label: 'Stats' }
+        ]
+      case 'player-stats':
+        return [
+          { label: 'Dashboard', onClick: () => setCurrentPage('landing') },
+          { label: 'Stats', onClick: () => setCurrentPage('stats') },
+          { label: 'Player Stats' }
+        ]
+      case 'match-forecaster':
+        return [
+          { label: 'Dashboard', onClick: () => setCurrentPage('landing') },
+          { label: 'Match Forecaster' }
+        ]
+      default:
+        return [
+          { label: 'Dashboard' }
+        ]
+    }
+  }
+
+  useEffect(() => {
+    // Check for an existing session on mount
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user)
+    })
+
+    // Listen for auth state changes
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    // Cleanup the listener on unmount
+    return () => {
+      listener.subscription.unsubscribe()
+    }
+  }, [])
+
+  const handleViewTeam = (teamId) => {
+    setSelectedTeamId(teamId)
+    setCurrentPage('team-overview')
+  }
+
+  const handleBackToTeams = () => {
+    setSelectedTeamId(null)
+    setCurrentPage('teams')
+  }
+
+  const handleViewTeamStats = (teamId) => {
+    setSelectedTeamId(teamId)
+    setCurrentPage('stats')
+  }
+
+  const handleViewPlayerStats = (playerId) => {
+    // Don't clear selectedTeamId - keep it so we can go back to the same team's stats
+    setCurrentPage('player-stats')
+    // Store playerId in localStorage for the PlayerStats component to access
+    localStorage.setItem('selectedPlayerId', playerId)
+  }
+
+  const handleNavigate = (page) => {
+    setNavigationHistory(prev => [...prev, currentPage])
+    setCurrentPage(page)
+    if (page !== 'team-overview') {
+      setSelectedTeamId(null)
+    }
+  }
+
+  const navigateTo = (page) => {
+    if (page === currentPage) return;
+    
+    setNavigationHistory(prev => [...prev, currentPage]);
+    setCurrentPage(page);
+  };
+
+  const goBack = () => {
+    if (navigationHistory.length === 0) {
+      navigateTo('landing');
+      return;
+    }
+    
+    const previousPage = navigationHistory[navigationHistory.length - 1];
+    setNavigationHistory(prev => prev.slice(0, -1));
+    setCurrentPage(previousPage);
+  };
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'landing':
+        return <Landing user={user} onNavigate={handleNavigate} />
+      case 'teams':
+        return <Teams user={user} onViewTeam={handleViewTeam} onViewTeamStats={handleViewTeamStats} onViewPlayerStats={handleViewPlayerStats} />
+      case 'team-overview':
+        return <TeamOverview user={user} teamId={selectedTeamId} onBack={handleBackToTeams} />
+      case 'log-match':
+        return <LogMatch user={user} onBack={() => handleNavigate('landing')} />
+      case 'players':
+        return (
+          <div style={{ textAlign: 'center', padding: 40 }}>
+            <h2 style={{ color: theme.colors.primary }}>Players Page</h2>
+            <p style={{ color: theme.colors.textSecondary }}>Coming soon...</p>
+          </div>
+        )
+      case 'stats':
+        return <Stats user={user} selectedTeamId={selectedTeamId} onViewPlayerStats={handleViewPlayerStats} />
+      case 'player-stats':
+        return <PlayerStats user={user} onNavigate={handleNavigate} goBack={goBack} />
+      case 'match-forecaster':
+        return <MatchForecaster user={user} onNavigate={handleNavigate} goBack={goBack} />
+      default:
+        return <Landing user={user} onNavigate={handleNavigate} />
+    }
+  }
+
+  if (!user) {
+    // Not logged in: show Auth UI
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          background: theme.colors.background,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          position: 'relative',
+        }}
+      >
+        <div
+          style={{
+            ...theme.styles.glassCard,
+            padding: '48px',
+            maxWidth: 440,
+            width: '100%',
+            animation: 'fadeIn 0.5s ease-out',
+          }}
+        >
+          <h2 style={{ 
+            textAlign: 'center', 
+            marginBottom: 32, 
+            fontSize: '28px',
+            fontFamily: theme.typography.fontFamily,
+            fontWeight: theme.typography.fontWeights.bold,
+            letterSpacing: theme.typography.letterSpacing.tight,
+            background: 'linear-gradient(135deg, #FFD700 0%, #FFEB3B 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}>
+            Welcome to Fives App
+          </h2>
+          <Auth 
+            supabaseClient={supabase} 
+            appearance={theme.authTheme} 
+          />
+        </div>
+      </div>
+    )
+  }
+
+  // Logged in: show user info
+    return (
+    <MatchCacheProvider>
+      <Layout
+        user={user}
+        onLogout={async () => {
+          await supabase.auth.signOut()
+          setUser(null)
+        }}
+        breadcrumbs={getBreadcrumbs()}
+      >
+        {renderPage()}
+      </Layout>
+    </MatchCacheProvider>
+  )
+}
+
+export default App

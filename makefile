@@ -1,50 +1,49 @@
-# Variables
-PYTHON=python
-SCRIPTS_DIR=scripts
-MODELS_DIR=models
-TEAM_STATS_DIR=team_stats
-PLAYER_STATS_DIR=player_stats
-HOMEPAGE_STATS_DIR=homepage
+.PHONY: help start stop setup clean install
 
-# Targets
-all: help
-
+# Default target
 help:
-	@echo "Usage:"
-	@echo "  make train_goals_model          - Train player goal models"
-	@echo "  make train_goals_against_model  - Train goals against model"
-	@echo "  make train_all                  - Train both models"
-	@echo "  make run_app                    - Run Streamlit app"
-	@echo "  make clean_models               - Remove all model files"
+	@echo "🚀 Fives App - Available Commands:"
+	@echo ""
+	@echo "  make start     - Start both backend and frontend servers"
+	@echo "  make stop      - Stop all running servers"
+	@echo "  make setup     - Setup backend dependencies"
+	@echo "  make install   - Install frontend dependencies"
+	@echo "  make clean     - Clean up temporary files"
+	@echo "  make help      - Show this help message"
+	@echo ""
 
-train_goals_model:
-	$(PYTHON) generate_player_goals_model.py
+# Start everything
+start:
+	@echo "🚀 Starting Fives App..."
+	@./start_all.sh
 
-train_goals_against_model:
-	$(PYTHON) generate_goals_against_model.py
+# Stop all servers
+stop:
+	@echo "🛑 Stopping all servers..."
+	@lsof -ti tcp:8000 | xargs kill 2>/dev/null || true
+	@lsof -ti tcp:5173 | xargs kill 2>/dev/null || true
+	@echo "✅ All servers stopped"
 
-train_all: train_goals_model train_goals_against_model
+# Setup backend
+setup:
+	@echo "🔧 Setting up backend..."
+	@cd backend && ./setup.sh
 
-run_app:
-	streamlit run Home.py
+# Install frontend dependencies
+install:
+	@echo "📦 Installing frontend dependencies..."
+	@cd fives-frontend && npm install
 
-clean_models:
-	rm -f $(MODELS_DIR)/*.joblib
+# Clean up
+clean:
+	@echo "🧹 Cleaning up..."
+	@find . -type f -name "*.pyc" -delete
+	@find . -type d -name "__pycache__" -delete
+	@find . -type d -name "node_modules" -exec rm -rf {} + 2>/dev/null || true
+	@find . -type d -name ".venv" -exec rm -rf {} + 2>/dev/null || true
+	@echo "✅ Cleanup complete"
 
-clean_stats_data:
-	rm -r data/$(TEAM_STATS_DIR)
-	rm -r data/$(PLAYER_STATS_DIR)
-	rm -r data/$(HOMEPAGE_STATS_DIR)
-
-
-
-generate_data:
-	$(PYTHON) generate_homepage_data.py
-	$(PYTHON) generate_player_stats_data.py
-	$(PYTHON) generate_team_stats_data.py
-
-clean: clean_models clean_stats_data 
-
-build: train_all generate_data
+# Quick start (setup + install + start)
+quick: setup install start
 
 

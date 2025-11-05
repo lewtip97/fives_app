@@ -1,0 +1,82 @@
+# Docker Makefile for Fives App
+
+.PHONY: help build build-dev up up-dev down logs clean rebuild
+
+# Default target
+help:
+	@echo "🐳 Fives App Docker Commands"
+	@echo ""
+	@echo "Development:"
+	@echo "  build-dev    Build development containers"
+	@echo "  up-dev       Start development environment"
+	@echo "  down         Stop all containers"
+	@echo ""
+	@echo "Production:"
+	@echo "  build        Build production containers"
+	@echo "  up           Start production environment"
+	@echo "  up-nginx     Start with Nginx reverse proxy"
+	@echo ""
+	@echo "Utility:"
+	@echo "  logs         Show container logs"
+	@echo "  clean        Remove containers and images"
+	@echo "  rebuild      Rebuild and restart containers"
+
+# Development
+build-dev:
+	@echo "🔨 Building development containers..."
+	docker-compose -f docker-compose.yml build
+
+up-dev:
+	@echo "🚀 Starting development environment..."
+	docker-compose -f docker-compose.yml --profile dev up -d
+
+# Production
+build:
+	@echo "🔨 Building production containers..."
+	docker-compose -f docker-compose.prod.yml build
+
+up:
+	@echo "🚀 Starting production environment..."
+	docker-compose -f docker-compose.prod.yml up -d
+
+up-nginx:
+	@echo "🚀 Starting production environment with Nginx..."
+	docker-compose -f docker-compose.prod.yml --profile nginx up -d
+
+# Utility
+down:
+	@echo "🛑 Stopping all containers..."
+	docker-compose -f docker-compose.yml down
+	docker-compose -f docker-compose.prod.yml down
+
+logs:
+	@echo "📋 Showing container logs..."
+	docker-compose -f docker-compose.yml logs -f
+
+clean:
+	@echo "🧹 Cleaning up containers and images..."
+	docker-compose -f docker-compose.yml down -v --rmi all
+	docker-compose -f docker-compose.prod.yml down -v --rmi all
+	docker system prune -f
+
+rebuild: clean build up
+	@echo "✅ Containers rebuilt and restarted!"
+
+# Individual service commands
+backend-logs:
+	docker-compose -f docker-compose.yml logs -f backend
+
+frontend-logs:
+	docker-compose -f docker-compose.yml logs -f frontend
+
+# Health checks
+health:
+	@echo "🏥 Checking service health..."
+	@curl -s http://localhost:8000/health | jq .
+	@curl -s http://localhost:3000/ | head -1
+
+# Quick start for development
+dev: build-dev up-dev
+	@echo "🎉 Development environment ready!"
+	@echo "🌐 Frontend: http://localhost:5173"
+	@echo "🔧 Backend: http://localhost:8000"
