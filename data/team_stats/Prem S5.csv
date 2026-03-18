@@ -1,4 +1,18 @@
 Player,Gameweek,Goals,Cumulative Goals
+Aiden,1,0,0
+Aiden,2,0,0
+Aiden,3,0,0
+Aiden,4,0,0
+Aiden,5,0,0
+Aiden,6,0,0
+Aiden,7,0,0
+Aiden,8,0,0
+Aiden,9,0,0
+Aiden,10,0,0
+Aiden,11,0,0
+Aiden,12,0,0
+Aiden,13,1,1
+Aiden,14,0,1
 Ash,1,1,1
 Ash,2,1,2
 Ash,3,0,2
@@ -10,6 +24,9 @@ Ash,8,3,5
 Ash,9,0,5
 Ash,10,0,5
 Ash,11,0,5
+Ash,12,0,5
+Ash,13,0,5
+Ash,14,1,6
 Baker,1,0,0
 Baker,2,0,0
 Baker,3,0,0
@@ -21,6 +38,9 @@ Baker,8,0,0
 Baker,9,0,0
 Baker,10,0,0
 Baker,11,0,0
+Baker,12,0,0
+Baker,13,0,0
+Baker,14,0,0
 Ben B,1,0,0
 Ben B,2,0,0
 Ben B,3,0,0
@@ -32,6 +52,9 @@ Ben B,8,0,0
 Ben B,9,0,0
 Ben B,10,0,0
 Ben B,11,0,0
+Ben B,12,0,0
+Ben B,13,0,0
+Ben B,14,0,0
 Bruce,1,1,1
 Bruce,2,2,3
 Bruce,3,0,3
@@ -43,6 +66,9 @@ Bruce,8,1,6
 Bruce,9,0,6
 Bruce,10,1,7
 Bruce,11,0,7
+Bruce,12,0,7
+Bruce,13,1,8
+Bruce,14,1,9
 Jack J,1,0,0
 Jack J,2,0,0
 Jack J,3,0,0
@@ -54,6 +80,9 @@ Jack J,8,0,0
 Jack J,9,0,0
 Jack J,10,0,0
 Jack J,11,0,0
+Jack J,12,0,0
+Jack J,13,0,0
+Jack J,14,0,0
 Jake H,1,0,0
 Jake H,2,0,0
 Jake H,3,1,1
@@ -65,6 +94,9 @@ Jake H,8,0,1
 Jake H,9,3,4
 Jake H,10,0,4
 Jake H,11,0,4
+Jake H,12,1,5
+Jake H,13,0,5
+Jake H,14,1,6
 Keenan,1,0,0
 Keenan,2,0,0
 Keenan,3,0,0
@@ -76,6 +108,9 @@ Keenan,8,0,0
 Keenan,9,0,0
 Keenan,10,0,0
 Keenan,11,0,0
+Keenan,12,0,0
+Keenan,13,0,0
+Keenan,14,0,0
 Lewis T,1,0,0
 Lewis T,2,0,0
 Lewis T,3,1,1
@@ -87,6 +122,9 @@ Lewis T,8,4,7
 Lewis T,9,0,7
 Lewis T,10,1,8
 Lewis T,11,1,9
+Lewis T,12,0,9
+Lewis T,13,1,10
+Lewis T,14,1,11
 Logan,1,2,2
 Logan,2,3,5
 Logan,3,0,5
@@ -98,6 +136,9 @@ Logan,8,2,7
 Logan,9,1,8
 Logan,10,0,8
 Logan,11,0,8
+Logan,12,0,8
+Logan,13,0,8
+Logan,14,1,9
 Matt C,1,0,0
 Matt C,2,0,0
 Matt C,3,0,0
@@ -109,6 +150,9 @@ Matt C,8,0,0
 Matt C,9,0,0
 Matt C,10,0,0
 Matt C,11,0,0
+Matt C,12,0,0
+Matt C,13,0,0
+Matt C,14,0,0
 Rich,1,0,0
 Rich,2,0,0
 Rich,3,0,0
@@ -120,6 +164,9 @@ Rich,8,0,0
 Rich,9,0,0
 Rich,10,0,0
 Rich,11,0,0
+Rich,12,0,0
+Rich,13,0,0
+Rich,14,0,0
 Sam G,1,0,0
 Sam G,2,0,0
 Sam G,3,0,0
@@ -131,6 +178,9 @@ Sam G,8,0,0
 Sam G,9,0,0
 Sam G,10,0,0
 Sam G,11,0,0
+Sam G,12,0,0
+Sam G,13,0,0
+Sam G,14,0,0
 Sam M,1,0,0
 Sam M,2,0,0
 Sam M,3,0,0
@@ -142,6 +192,9 @@ Sam M,8,0,0
 Sam M,9,0,0
 Sam M,10,0,0
 Sam M,11,0,0
+Sam M,12,0,0
+Sam M,13,0,0
+Sam M,14,0,0
 Sam T,1,0,0
 Sam T,2,2,2
 Sam T,3,0,2
@@ -153,6 +206,9 @@ Sam T,8,0,3
 Sam T,9,0,3
 Sam T,10,0,3
 Sam T,11,0,3
+Sam T,12,0,3
+Sam T,13,0,3
+Sam T,14,0,3
 Stan,1,0,0
 Stan,2,0,0
 Stan,3,0,0
@@ -164,6 +220,9 @@ Stan,8,0,0
 Stan,9,0,0
 Stan,10,0,0
 Stan,11,0,0
+Stan,12,0,0
+Stan,13,0,0
+Stan,14,0,0
 TG,1,2,2
 TG,2,0,2
 TG,3,0,2
@@ -175,3 +234,6 @@ TG,8,0,2
 TG,9,0,2
 TG,10,0,2
 TG,11,0,2
+TG,12,0,2
+TG,13,0,2
+TG,14,0,2
